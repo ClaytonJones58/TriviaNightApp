@@ -399,6 +399,10 @@ body{ padding-top: calc(var(--safe-top) - 12px); }
   }
 }
 
+.rotor{
+  transform-origin: 50% 50%;
+  will-change: transform; /* smoother + prevents layout jitter */
+}
 
 </style>
 </head>
@@ -762,23 +766,31 @@ const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
 // === Responsive wheel sizing ===
 function sizeWheel(){
+  // iOS address bar / orientation jiggle → bail during spin
+  if (window._spinning) return;
+
   const area = document.querySelector('.wheel-area');
   const dpr  = Math.min(window.devicePixelRatio || 1, 2);
 
-  // size the canvas to ~90% of the wheel area (cap it if you want)
-  const css = Math.min(360, Math.floor(area.clientWidth * 0.9));
+  // pick a CSS size based on container width (cap if you like)
+  const css = Math.min(420, Math.floor(area.clientWidth * 0.9));
 
-  // set device-pixel backing store + CSS size
+  // 🔒 lock the container height so centering/grid doesn’t move mid-spin
+  area.style.height = css + 'px';
+  area.style.minHeight = css + 'px';
+
+  // resize the backing store
   canvas.width  = Math.floor(css * dpr);
   canvas.height = Math.floor(css * dpr);
   canvas.style.width  = css + 'px';
   canvas.style.height = css + 'px';
 
-  // draw in CSS pixels (so your existing math works nicely)
+  // draw in CSS pixels
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   drawWheel();
 }
+
 window.addEventListener('resize', sizeWheel);
 window.addEventListener('orientationchange', sizeWheel);
 
