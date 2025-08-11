@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="apple-mobile-web-app-title" content="Trivia Night">
   <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0c1730">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -1996,6 +1997,16 @@ formatSel.value = savedFormat || '2v2';
 updateMatchupUI();     // keeps badges/wheel/score in sync
 
 </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      const url = './sw.js';
+      navigator.serviceWorker.register(url)
+        .catch(err => console.warn('SW registration failed', err));
+    });
+  }
+</script>
+
 </body>
 </html>
 
