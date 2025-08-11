@@ -78,7 +78,13 @@
   .wheel-wrap{display:grid;gap:12px;grid-template-rows:auto 1fr auto}
   .wheel-area{position:relative;height:360px;display:grid;place-items:center}
   .pointer{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--accent)}
-  .rotor{position:relative;width:320px;height:320px}
+ .rotor{
+  position:relative;
+  width:320px;
+  height:320px;
+  transform-origin:50% 50%;   /* <-- keep rotation around the true center */
+}
+
   .wheel{position:absolute;inset:0;border-radius:50%;box-shadow:0 12px 40px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.06)}
   .labels{position:absolute;inset:0}
   .bubble{
@@ -295,10 +301,20 @@
   header .row{width:100%; overflow-x:auto; gap:8px; padding-bottom:6px}
   header .btn{flex:0 0 auto}
 
-  /* Wheel scales with screen */
-  .wheel-area{height:auto}
-  .rotor{width:78vw; height:78vw; max-width:420px; max-height:420px; margin:6px auto 0}
-  #wheelCanvas{width:100%; height:100%}
+/* Wheel scales with screen — fixed square so it won’t orbit */
+.wheel-area{
+  height: calc(min(78vw, 420px) + 24px);  /* fixed container height */
+  display: grid;
+  place-items: center;
+}
+.rotor{
+  width:  min(78vw, 420px);
+  height: min(78vw, 420px);
+  margin: 6px auto 0;
+  transform-origin: 50% 50%;             /* rotate around center */
+}
+#wheelCanvas{ width:100%; height:100%; }
+
 
   /* Team names + chips */
   .team-name{flex-direction:column; align-items:stretch}
@@ -407,6 +423,7 @@ body{ padding-top: calc(var(--safe-top) - 12px); }
   transform-origin: 50% 50%;
   will-change: transform; /* smoother + prevents layout jitter */
 }
+.rotor { transform-origin: 50% 50%; }
 
 </style>
 </head>
@@ -794,9 +811,26 @@ function sizeWheel(){
 
   drawWheel();
 }
+// Prevent re-centering mid-spin; queue a resize until the spin finishes
+let _resizeQueued = false;
 
-window.addEventListener('resize', sizeWheel);
-window.addEventListener('orientationchange', sizeWheel);
+function safeSizeWheel(){
+  if (window._spinning) { _resizeQueued = true; return; }
+  sizeWheel();
+}
+
+window.addEventListener('resize', safeSizeWheel);
+window.addEventListener('orientationchange', safeSizeWheel);
+
+// After the spin animation ends, run any queued resize once
+rotor.addEventListener('transitionend', (e) => {
+  if (e.propertyName !== 'transform') return;
+  if (_resizeQueued) {
+    _resizeQueued = false;
+    sizeWheel();
+  }
+});
+
 
 
 const _imgCache = new Map();
