@@ -316,6 +316,56 @@
   .rotor{width:86vw; height:86vw}
 }
 
+/* ===== Mobile polish ===== */
+@media (max-width: 960px){
+  /* stack the 3 columns */
+  .grid{ grid-template-columns: 1fr; gap:14px; }
+  header{ flex-wrap:wrap; gap:8px; }
+}
+
+@media (max-width: 600px){
+  /* keep content clear of the floating button */
+  .app{ padding: 0 14px 84px; }  /* bottom padding for the button */
+
+  /* move the Emergency button to bottom center on phones */
+  .siren-btn{
+    top:auto; left:50%; bottom:12px; transform:translateX(-50%);
+    padding:8px 12px; border-radius:12px; font-weight:800; font-size:14px;
+  }
+
+  /* tighten cards/buttons a bit */
+  .card{ padding:14px; border-radius:14px; }
+  .btn{ padding:8px 12px; }
+
+  /* wheel & badges a bit smaller so nothing collides */
+  .wheel-area{ height:300px; }
+  .rotor{ width:260px; height:260px; }
+  .badge{ width:120px; height:120px; }
+
+  /* team name inputs fill the row */
+  .team-name input{ width:100%; }
+
+  /* chips stay side-by-side and readable */
+  .team-members{ gap:8px; justify-content:flex-start; }
+  .chip{ font-size:12px; padding:6px 8px; }
+}
+
+@media (max-width: 600px){
+  .app{ padding-top:64px; }      /* push content down under the fixed button */
+  .siren-btn{ top:12px; left:12px; bottom:auto; transform:none; }
+}
+
+/* Keep the team badges from colliding with the "Name" label on phones */
+@media (max-width: 600px){
+  .teams{
+    grid-template-columns: 1fr 32px 1fr; /* a little narrower VS gap */
+    align-items: start;                  /* text starts below the circles */
+    row-gap: 10px;                       /* vertical breathing room */
+  }
+  .badge{ width:120px; height:120px; margin-bottom:10px; }
+  .team-name{ margin-top:6px; }
+}
+
 
 </style>
 </head>
