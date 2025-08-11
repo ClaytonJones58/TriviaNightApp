@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Trivia Night</title>
+<style>
+  :root{--bg:#0c1730;--panel:#0f2347;--text:#dff3ff;--accent:#5ee1ff}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 700px at -10% -10%,#183461 0%,#0c1730 50%,#0a1326 100%);
+    color:var(--text);
+    font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial
+  }
+  .app{max-width:1200px;margin:28px auto;padding:0 20px}
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  h1{margin:0;font-size:24px}
+  .grid{display:grid;grid-template-columns:390px 1fr 320px;gap:16px;align-items:start}
+  .card{background:#0f2347;border-radius:18px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
+  .section-title{margin:0 0 10px;font-weight:700;opacity:.9}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{
+    appearance:none;border:0;border-radius:12px;padding:9px 14px;background:#132b57;
+    color:var(--text);cursor:pointer;font-weight:600;
+    box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.06)
+  }
+  .btn.secondary{background:#15294a}
+  .btn.success{background:linear-gradient(135deg,#13c7a3,#47f3c9)}
+  .btn.toggle{background:#15294a;outline:2px solid transparent}
+  .btn.toggle.active{outline-color:var(--accent);box-shadow:0 0 0 4px rgba(94,225,255,.15)}
+  .faint{opacity:.7}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:10px 0}
+
+/* Emergency (Merlo) button – you already added this in last step */
+.siren-btn{
+  position:fixed; top:12px; left:12px; z-index:10000;
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border:0; border-radius:12px;
+  background:linear-gradient(135deg,#ff3b3b,#ff9e5e);
+  color:#001; font-weight:800; cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+.siren-btn .dot{
+  width:10px; height:10px; border-radius:999px; background:#001; opacity:.9;
+  box-shadow:0 0 0 3px rgba(0,0,0,.15);
+  animation:pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse{ 0%,100%{transform:scale(1);opacity:.9} 50%{transform:scale(1.3);opacity:.6} }
+
+/* ---- YouTube popup overlay ---- */
+#sunnyOverlay{
+  position:fixed; inset:0; z-index:10001; display:none;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
+}
+#sunnyOverlay.show{ display:grid; place-items:center; }
+.sunny-modal{
+  width:min(900px,92vw); aspect-ratio:16/9; background:#000; border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
+  position:relative; overflow:hidden;
+}
+.sunny-modal iframe{ width:100%; height:100%; border:0; }
+.sunny-close{
+  position:absolute; top:8px; right:8px; z-index:2;
+  border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
+  background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.sunny-close:hover{ background:#102852; }
+
+
+
+  /* Wheel */
+  .wheel-wrap{display:grid;gap:12px;grid-template-rows:auto 1fr auto}
+  .wheel-area{position:relative;height:360px;display:grid;place-items:center}
+  .pointer{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--accent)}
+  .rotor{position:relative;width:320px;height:320px}
+  .wheel{position:absolute;inset:0;border-radius:50%;box-shadow:0 12px 40px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.06)}
+  .labels{position:absolute;inset:0}
+  .bubble{
+    position:absolute;width:56px;height:56px;border-radius:50%;
+    display:grid;place-items:center;font-weight:800;color:#0a1326;background:#dff3ff;
+    box-shadow:0 6px 12px rgba(0,0,0,.35);transform:translate(-50%,-50%)
+  }
+
+  /* Roster */
+  .roster{display:grid;gap:8px}
+  .person{
+    display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;
+    background:#10254a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
+  }
+  .avatar{
+    width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+    font-size:13px;font-weight:700;color:#001
+  }
+  .addperson{display:flex;gap:8px;margin-top:10px}
+  .addperson input[type="text"]{flex:1;min-width:120px;background:#132b57;border:0;padding:8px 10px;border-radius:10px;color:var(--text)}
+  .addperson input[type="color"]{width:42px;height:42px;border:0;background:#132b57;border-radius:10px;padding:0}
+
+  /* Small delete button for custom players */
+  .icon-del{
+    border:0;background:#0a1e3c;color:#9ccfff;width:28px;height:28px;border-radius:8px;
+    display:grid;place-items:center;font-weight:800;cursor:pointer;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+  }
+  .icon-del:hover{background:#102852}
+
+  /* Matchup */
+  .teams{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center}
+  .badge{width:150px;height:150px;margin:auto}
+  .team-name{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .team-name input{background:#132b57;border:0;padding:8px 10px;border-radius:10px;color:var(--text);width:180px}
+  .team-members{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .chip{padding:6px 8px;background:#132b57;border-radius:999px;font-size:13px;display:flex;align-items:center;gap:6px}
+  .chip button{border:0;background:#0a1e3c;color:#9ccfff;border-radius:6px;padding:0 6px;cursor:pointer}
+
+  /* Games */
+  .games{display:grid;gap:10px}
+  .game-list{display:grid;gap:8px}
+  .game a{
+    color:var(--text);text-decoration:none;background:#132b57;padding:10px 12px;border-radius:10px;
+    display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
+  }
+  .glabel{display:flex;gap:10px;align-items:center}
+  .ico{width:22px;height:22px;border-radius:6px;background:#0d1f3e;display:grid;place-items:center;font-size:13px}
+
+  /* Scoreboard */
+  .score{display:grid;gap:10px}
+  .score-row{display:flex;justify-content:space-between;align-items:center;background:#10254a;padding:8px 10px;border-radius:10px}
+
+/* --- Game Tracker: two-line cards --- */
+#tracker{display:flex;flex-direction:column;gap:10px}
+.track-card{
+  position:relative;background:#10254a;border-radius:10px;padding:10px 12px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
+}
+.track-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.track-title{font-weight:700}
+
+/* Remove (×) button */
+.tr-remove{
+  border:0;background:#0a1e3c;color:#9ccfff;width:26px;height:26px;border-radius:8px;
+  display:grid;place-items:center;font-weight:800;cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+}
+.tr-remove:hover{background:#102852}
+
+/* Big rectangular choice buttons UNDER the title (side-by-side) */
+.pick-row{
+  display:flex !important;      /* force flex */
+  flex-direction:row;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:nowrap;              /* keep one line */
+}
+.pick{
+  flex:1 1 0;                    /* split 50/50 */
+  min-width:0;                   /* allow shrink instead of wrap */
+  max-width:none;                /* no extra limiting */
+  padding:10px 14px;
+  border-radius:10px;
+  background:#132b57;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  cursor:pointer;
+  font:600 14px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+  letter-spacing:.2px;
+  color:#dff3ff;
+  white-space:nowrap;            /* truncate long names */
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.pick.active{
+  outline:2px solid var(--accent);
+  box-shadow:0 0 0 4px rgba(94,225,255,.15), inset 0 0 0 1px rgba(255,255,255,.06)
+}
+
+/* --- Manual points footer --- */
+.manual-points{
+  margin-top:6px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.12);
+  display:flex;flex-direction:column;gap:8px
+}
+.mp-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap;
+}
+.mp-side{
+  flex:1;min-width:0;display:flex;align-items:center;gap:8px;
+}
+.mp-side strong{
+  max-width:140px;       /* cap label width; truncates long team names */
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font:700 14px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+  color:#dff3ff;
+}
+.mp-btn{
+  border:0;background:#0a1e3c;color:#9ccfff;width:28px;height:28px;border-radius:8px;
+  display:grid;place-items:center;font-weight:800;cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+}
+.mp-btn:hover{background:#102852}
+.mp-val{min-width:22px;text-align:center;font-weight:700}
+
+
+
+
+  /* Anchored Player Panel (large, shown by roster click) */
+  .player-panel{
+    position:absolute;
+    z-index:9999;
+    width:600px;
+    background:#10254a;
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 18px 48px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
+    display:none;
+    gap:16px
+  }
+  .player-panel.show{display:grid}
+  .pp-head{display:grid;grid-template-columns:160px 1fr 36px;gap:16px;align-items:center}
+  .pp-photo{
+    width:160px;height:160px;border-radius:14px;overflow:hidden;
+    background:#132b57;display:grid;place-items:center;font-weight:800;color:#dff3ff;font-size:36px
+  }
+  .pp-photo img{width:100%;height:100%;object-fit:cover}
+  .pp-name{font-weight:800;font-size:26px;line-height:1.2}
+  .pp-sub{opacity:.8;font-size:14px;margin-top:6px}
+  .pp-close{
+    border:0;background:#0a1e3c;color:#9ccfff;width:36px;height:36px;border-radius:10px;
+    display:grid;place-items:center;font-weight:800;cursor:pointer;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+  }
+  .pp-close:hover{background:#102852}
+  .pp-controls{margin-top:6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px}
+  .pp-label{font-size:13px;opacity:.85}
+  #ppColor{
+    width:64px;height:46px;border:0;border-radius:10px;padding:0;background:#132b57;cursor:pointer;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
+  }
+/* --- Fix team name / chips overlap --- */
+.teamA, .teamB{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.badge{ margin-bottom:10px; }          /* space below the circle */
+
+.team-name{
+  width:100%;
+  max-width:260px;                     /* cap width so it doesn’t collide with chips */
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;               /* put label above the input */
+  gap:6px;
+}
+
+.team-name label{ line-height:1; }     /* tighter label */
+.team-name input{
+  width:100%;
+  max-width:260px;                     /* keep input from spilling */
+}
+
+.team-members{
+  margin-top:10px;                     /* space under input */
+  max-width:260px;                     /* match the input width */
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:center;
+}
+
+.team-members {
+  flex-wrap: nowrap !important;   /* don't let them stack */
+  overflow-x: auto;               /* allow horizontal scroll if needed */
+  gap: 6px;
+  justify-content: center;        /* center if fewer chips than width */
+}
+
+.team-members::-webkit-scrollbar {
+  height: 6px;
+}
+.team-members::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 3px;
+}
+
+</style>
+</head>
+<body>
+<!-- Emergency button (already added previously) -->
+<button id="emergencyBtn" class="siren-btn" title="Emergency: press if Merlo is falling asleep" aria-label="Emergency: press if Merlo is falling asleep">
+  <span class="dot" aria-hidden="true"></span>
+  🚨 Emergency — Wake Merlo!
+</button>
+
+<div id="sunnyOverlay" aria-hidden="true">
+  <div class="sunny-modal" role="dialog" aria-label="Always Sunny Clip">
+    <button class="sunny-close" id="sunnyClose" aria-label="Close video">×</button>
+    <div id="sunnyPlayer" style="width:100%;height:100%"></div>
+  </div>
+</div>
+
+
+
+
+<div class="app">
+  <header>
+    <h1>🌀 Trivia Night</h1>
+    <div class="row">
+      <button id="newGameBtn" class="btn">New Game</button>
+      <button id="resetBtn" class="btn secondary">Reset</button>
+      <button id="clearTeamsBtn" class="btn secondary">Clear Teams</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <section class="card wheel-wrap">
+      <div class="row">
+        <button id="modeNormal" class="btn">Normal Spin</button>
+        <button id="modeFoF" class="btn secondary">Friend or Foe</button>
+        <span id="modeState" class="faint"></span>
+      </div>
+
+      <div class="wheel-area">
+        <div class="pointer"></div>
+        <div id="rotor" class="rotor">
+          <canvas id="wheelCanvas" width="320" height="320"></canvas>
+          <div id="labels" class="labels"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="spinBtn" class="btn success">SPIN</button>
+        <button id="friendBtn" class="btn toggle" style="display:none">Friend</button>
+        <button id="foeBtn" class="btn toggle" style="display:none">Foe</button>
+      </div>
+
+      <div class="divider"></div>
+      <h3 class="section-title">Roster</h3>
+      <div id="roster" class="roster"></div>
+      <div class="addperson">
+        <input id="newName" type="text" placeholder="Add player name…" />
+        <input id="newColor" type="color" value="#6ee7b7" />
+        <button id="addBtn" class="btn">Add</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <label class="faint">Format:</label>
+        <select id="formatSel" class="btn" style="padding-right:28px">
+          <option value="2v2" selected>2 vs 2</option>
+          <option value="2v1">2 vs 1</option>
+          <option value="3v3">3 vs 3</option>
+          <option value="3v2">3 vs 2</option>
+          <option value="auto">Auto balance</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- MIDDLE -->
+    <section class="card">
+      <h3 class="section-title">Matchup</h3>
+      <div class="teams">
+        <div class="teamA">
+          <div id="badgeA" class="badge"></div>
+          <div class="team-name"><label class="faint">Name</label><input id="teamAName" value="Team A"></div>
+          <div id="teamAList" class="team-members"></div>
+        </div>
+        <div class="vs" style="display:grid;place-items:center;font-weight:800;color:var(--accent)">VS</div>
+        <div class="teamB">
+          <div id="badgeB" class="badge"></div>
+          <div class="team-name"><label class="faint">Name</label><input id="teamBName" value="Team B"></div>
+          <div id="teamBList" class="team-members"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <h3 class="section-title">Games</h3>
+      <div class="games">
+        <div class="row">
+          <button id="randomFavBtn" class="btn">Pick Random (Favorites)</button>
+          <button id="randomAllBtn" class="btn secondary">Pick Random (All)</button>
+        </div>
+        <div class="game-list" id="favList"></div>
+        <details><summary>More games ▾</summary>
+          <div class="game-list" id="moreList" style="margin-top:8px"></div>
+        </details>
+      </div>
+    </section>
+
+<!-- RIGHT -->
+<aside class="card">
+  <h3 class="section-title">Scoreboard</h3>
+  <div id="score" class="score"></div>
+
+  <div class="divider" style="margin:14px 0"></div>
+  <h3 class="section-title">Game Tracker</h3>
+  <div id="tracker" class="games" style="gap:10px"></div>
+</aside>
+
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+<script>
+/* ---------- Data ---------- */
+
+function buildEmbedUrl(id){
+  const params = new URLSearchParams({
+    autoplay: "1",
+    mute: "1",            // ensures autoplay works on most browsers
+    playsinline: "1",
+    modestbranding: "1",
+    rel: "0"
+  });
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+}
+
+// Fallback search (Shorts filter) if we have no IDs
+function openShortsSearchFallback(){
+  const queries = [
+    "always sunny short",
+    "it's always sunny shorts",
+    "charlie day always sunny short",
+    "mac always sunny short",
+    "dennis reynolds short",
+    "dee reynolds short",
+    "frank reynolds short",
+    "nightman cometh short",
+    "wild card always sunny short",
+    "milk steak short"
+  ];
+  const q = encodeURIComponent(queries[Math.floor(Math.random()*queries.length)]);
+  const shortsFilter = "EgIQAQ%3D%3D"; // Shorts
+  const url = `https://www.youtube.com/results?search_query=${q}&sp=${shortsFilter}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+// ===== Always Sunny "Merlo Wake-Up" (IFrame API, in-page, unmuted) =====
+
+// 1) Add some Shorts IDs you like (the part after /shorts/XXXXXXXX):
+// Example: https://www.youtube.com/shorts/AbCdEfGh -> "AbCdEfGh"
+const SUNNY_SHORTS = [
+  '2uK7aPgVNLI',
+  'JSFOr7ZGG18',
+  'wjDFqPBxIkI',
+  'ywGHeCD_BZc',
+  'skJGJV8QLOY',
+  'wMtm5wkMdg8',
+  'H7j53N4l3HA',
+  'wXk0TWqg3WM',
+  'UVIsGSlW2gs',
+  'NYpEqCpgsYo',
+  'yCZ-5a6GBtE',
+  'XCFwkOZzRSM',
+  '-ygA9VJEL-s',
+  '6rjG0OFvVBg',
+  'be8s6Cz4FJw',
+  'sxvElyepIBQ',
+  'NETjjgCZAdM',
+  'tyfnHOqLv0U',
+  'fHTNNiRJTxQ',
+  'xW9ZybNOq9Q',
+  '2QWcLVQex1E',
+  'u2HE4fBrDlY',
+  'VfdBMYixD8k',
+  'BTsbkDmn_Mw',
+  'NeqAI2u6xPE',
+  'Qjh7qSVhPII',
+  'zMazJ54cY34',
+  'AUG8FyjX-e0',
+  '0PvJOrQOlnE',
+  'SyFhi2vdyMI',
+  '_47Tdm-V1Yo',
+  '2-IreehHQN8',
+  'HMR0kXuF9_8',
+  'X9qeeiQTB9k'
+];
+
+
+// Optional: safer fallback queries that ALWAYS include "always sunny"
+const SUNNY_FALLBACK_QUERIES = [
+  '"always sunny" "milk steak" short',
+  '"always sunny" "wild card" short',
+  '"always sunny" "nightman" short',
+  '"always sunny" "charlie work" short'
+];
+
+// --- Modal wiring ---
+(function initSunnyPopup(){
+  const btn     = document.getElementById('emergencyBtn');
+  const overlay = document.getElementById('sunnyOverlay');
+  const closeBtn= document.getElementById('sunnyClose');
+  const mount   = document.getElementById('sunnyPlayer');
+
+  let ytReady = false;
+  let player  = null;
+
+  // IFrame API ready flag
+  window.onYouTubeIframeAPIReady = function(){ ytReady = true; };
+
+  // Accepts full Shorts URL or plain ID
+  function toShortId(item){
+    if (!item) return null;
+    let m = String(item).match(/\/shorts\/([a-zA-Z0-9_-]{6,})/);
+    if (m) return m[1];
+    m = String(item).match(/[?&]v=([a-zA-Z0-9_-]{6,})/);
+    if (m) return m[1];
+    return String(item);
+  }
+
+  function randomShortId(){
+    if (Array.isArray(SUNNY_SHORTS) && SUNNY_SHORTS.length){
+      const raw = SUNNY_SHORTS[Math.floor(Math.random()*SUNNY_SHORTS.length)];
+      return toShortId(raw);
+    }
+    return null;
+  }
+
+  function openOverlay(){
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  function closeOverlay(){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+    document.documentElement.style.overflow = '';
+    try { player && player.destroy && player.destroy(); } catch {}
+    player = null;
+    mount.innerHTML = ''; // clear anything inside
+  }
+
+  function playShort(id){
+    // Preferred: IFrame API player (lets us unmute on click)
+    if (window.YT && ytReady && typeof YT.Player === 'function'){
+      mount.innerHTML = '';
+      player = new YT.Player('sunnyPlayer', {
+        videoId: id,
+        playerVars: { autoplay: 1, controls: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+        events: {
+          onReady: (e) => {
+            try { e.target.unMute(); } catch {}
+            try { e.target.setVolume(100); } catch {}
+            try { e.target.playVideo(); } catch {}
+          }
+        }
+      });
+      return;
+    }
+    // Fallback: regular embed (autoplays muted)
+    mount.innerHTML =
+      `<iframe
+         src="${buildEmbedUrl(id)}"
+         allow="autoplay; encrypted-media; picture-in-picture"
+         allowfullscreen
+         referrerpolicy="strict-origin-when-cross-origin"
+         style="width:100%;height:100%;border:0"></iframe>`;
+  }
+
+
+
+  btn.addEventListener('click', () => {
+  const id = randomShortId();
+  openOverlay();  // show the modal right away
+
+  if (!id){
+    mount.innerHTML = `<div style="display:grid;place-items:center;height:100%;color:#fff;font:16px system-ui">
+      Add a few Always Sunny Shorts IDs to <code>SUNNY_SHORTS</code>.
+    </div>`;
+    return;
+  }
+
+  // If API is ready, build the real player *synchronously in this click* (counts as user gesture)
+  if (window.YT && ytReady && typeof YT.Player === 'function') {
+    playShort(id); // your onReady already unMutes + playVideo()
+    return;
+  }
+
+  // Otherwise: start a muted iframe immediately so it autoplays now,
+  // then swap to the API player (unmuted) as soon as the API is ready.
+  mount.innerHTML =
+    `<iframe
+       src="${buildEmbedUrl(id)}"
+       allow="autoplay; encrypted-media; picture-in-picture"
+       allowfullscreen
+       referrerpolicy="strict-origin-when-cross-origin"
+       style="width:100%;height:100%;border:0"></iframe>`;
+
+  const waitForApi = () => {
+    if (window.YT && ytReady && typeof YT.Player === 'function') {
+      playShort(id); // replaces the iframe and unMutes
+    } else {
+      requestAnimationFrame(waitForApi);
+    }
+  };
+  requestAnimationFrame(waitForApi);
+});
+
+  closeBtn.addEventListener('click', closeOverlay);
+  overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeOverlay(); });
+  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && overlay.classList.contains('show')) closeOverlay(); });
+})();
+
+
+
+const DEFAULT_PEOPLE = [
+  { id:'clay',   name:'Clay',     color:'#59e1ff', photo:'assets/players/TrivPic_Clay.png' },
+  { id:'merlo',  name:'Merlo',    color:'#31d0aa', photo:'assets/players/TrivPic_Merlo.png' },
+  { id:'lindz',  name:'Lindz',    color:'#ff8a5b', photo:'assets/players/TrivPic_Lindz.png' },
+  { id:'danny',  name:'Danny',    color:'#8b5cf6', photo:'assets/players/TrivPic_Danny.png' },
+  { id:'will',   name:'Will',     color:'#9ca3af', photo:'assets/players/TrivPic_Will.png' },
+  { id:'ben',    name:'Ben',      color:'#ffd166', photo:'assets/players/TrivPic_Ben.jpg' },
+  { id:'rj',     name:'RJ',       color:'#93c5fd', photo:'assets/players/TrivPic_RJ.png' },
+  { id:'sher',   name:'Sherlock', color:'#f472b6', photo:'assets/players/TrivPic_Sherlock.png' },
+  { id:'kelly',  name:'Kelly',    color:'#6ee7b7', photo:'assets/players/TrivPic_Kelly.png' }
+];
+const DEFAULT_IDS = new Set(DEFAULT_PEOPLE.map(p => p.id));
+
+const FAVORITES = [
+  {icon:'🟩',title:'Wordle',url:'https://www.nytimes.com/games/wordle/index.html'},
+  {icon:'🎵',title:'Bandle',url:'https://bandle.app/'},
+  {icon:'🧩',title:'Connections',url:'https://www.nytimes.com/games/connections'},
+  {icon:'🧠',title:'Daily Dozen',url:'https://www.jomboymedia.com/daily-dozen'},
+  {icon:'📰',title:'NYT Mini',url:'https://www.nytimes.com/crossword'}
+];
+const MORE_GAMES = [
+  {title:'Framed',url:'https://framed.wtf/'},
+  {title:'Movie Grid',url:'https://www.moviedle.app/'},
+  {title:'GeoGuessr',url:'https://www.geoguessr.com/'},
+  {title:'Flagle',url:'https://flagle.io/'}
+];
+
+/* ---------- State (restore or defaults) ---------- */
+let PEOPLE, selectedIds, wheelIds, mode, chooser, fofChoice, teamA, teamB, nextTeam, teamANameVal, teamBNameVal, savedFormat;
+let TRACKED_GAMES = []; // [{id,title,url,winner: null|'A'|'B', shown: true}]
+let MANUAL_A = 0; // manual bonus points for Team A
+let MANUAL_B = 0; // manual bonus points for Team B
+
+let allowAutoFill = false; // only true during spin / FoF commits
+let _autoFillTimer = null;   // delayed auto-fill timer
+
+
+restoreState();
+
+/* ---------- DOM ---------- */
+const rotor = document.getElementById('rotor');
+const labelsEl = document.getElementById('labels');
+const spinBtn = document.getElementById('spinBtn');
+const friendBtn = document.getElementById('friendBtn');
+const foeBtn = document.getElementById('foeBtn');
+const modeNormal = document.getElementById('modeNormal');
+const modeFoF = document.getElementById('modeFoF');
+const modeState = document.getElementById('modeState');
+const rosterEl = document.getElementById('roster');
+const formatSel = document.getElementById('formatSel');
+const teamAList = document.getElementById('teamAList');
+const teamBList = document.getElementById('teamBList');
+const badgeA = document.getElementById('badgeA');
+const badgeB = document.getElementById('badgeB');
+
+const teamAName = document.getElementById('teamAName');
+const teamBName = document.getElementById('teamBName');
+const scoreEl = document.getElementById('score');
+const newNameEl = document.getElementById('newName');
+const newColorEl = document.getElementById('newColor');
+const addBtn = document.getElementById('addBtn');
+
+/* ---- Canvas + image helpers ---- */
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+
+const _imgCache = new Map();
+function loadImage(src){
+  return new Promise((res, rej) => {
+    if (_imgCache.has(src)) return res(_imgCache.get(src));
+    const im = new Image();
+    im.onload  = () => { _imgCache.set(src, im); res(im); };
+    im.onerror = (e) => { console.error('❌ Failed to load image:', src, e); rej(e); };
+    im.src = src;
+  });
+}
+function drawImageCover(ctx, img, cx, cy, diam){
+  const w = img.width, h = img.height;
+  const scale = Math.max(diam / w, diam / h);
+  const sw = w * scale, sh = h * scale;
+  const sx = (sw - diam) / 2, sy = (sh - diam) / 2;
+  const off = document.createElement('canvas');
+  off.width = off.height = diam;
+  const octx = off.getContext('2d');
+  octx.drawImage(img, -sx, -sy, sw, sh);
+  ctx.drawImage(off, cx - diam/2, cy - diam/2);
+}
+
+// ---- Rim + arc text helpers ----
+const BORDER_THICK = 26;
+const RIM_EDGE = 'rgba(10,19,38,.65)';
+const NAME_PAD_DEG = 6;
+
+function ringSegmentPath(ctx, cx, cy, rOuter, rInner, a0, a1) {
+  ctx.beginPath();
+  ctx.arc(cx, cy, rOuter, a0, a1, false);
+  ctx.arc(cx, cy, rInner, a1, a0, true);
+  ctx.closePath();
+}
+
+function drawArcText(ctx, text, cx, cy, r, a0, a1) {
+  if (!text) return;
+  const pad = NAME_PAD_DEG * Math.PI/180;
+  const span = Math.max(0, (a1 - a0) - 2*pad);
+  if (span <= 0) return;
+
+  ctx.save();
+  ctx.font = 'bold 18px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#dff3ff';
+
+  const baseWidth = ctx.measureText(text).width;
+  const maxArc = r * span;
+  if (baseWidth > maxArc) {
+    const scale = Math.max(0.75, maxArc / baseWidth);
+    const size = Math.floor(18 * scale);
+    ctx.font = `bold ${size}px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial`;
+  }
+
+  const widths = [...text].map(ch => ctx.measureText(ch).width);
+  const total = widths.reduce((a,b)=>a+b,0);
+  const start = a0 + pad + (span - total/r)/2;
+
+  ctx.strokeStyle = 'rgba(10,19,38,.9)';
+  ctx.lineWidth = 3;
+
+  let acc = 0;
+  for (let i=0; i<text.length; i++){
+    const cw = widths[i];
+    const angle = start + (acc + cw/2)/r;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle + Math.PI/2); // align text with the same side as the slice
+    ctx.strokeText(text[i], 0, -r);
+    ctx.fillText(text[i],   0, -r);
+    ctx.restore();
+    acc += cw;
+  }
+  ctx.restore();
+}
+
+/* ---------- Drop to badges ---------- */
+[badgeA, badgeB].forEach(b=>{
+  b.addEventListener('dragover', e=>{ e.preventDefault(); b.classList.add('drop-target'); });
+  b.addEventListener('dragleave', ()=> b.classList.remove('drop-target'));
+  b.addEventListener('drop', e=>{
+    e.preventDefault(); b.classList.remove('drop-target');
+    const id = e.dataTransfer.getData('text/plain');
+    const person = byId(id);
+    if (!person) return;
+
+    // Remove from whichever team they were on
+    teamA = teamA.filter(p=>p.id!==id);
+    teamB = teamB.filter(p=>p.id!==id);
+
+    // Add to the dropped team
+    if (b === badgeA) addToTeam('A', person); else addToTeam('B', person);
+
+    // ⬇️ Trigger auto-fill (e.g., pair the last two, or fill last slot)
+    allowAutoFill = true;
+    autoFillIfDetermined();
+    allowAutoFill = false;
+
+    syncWheelFromSelected();
+    drawWheel();
+    updateMatchupUI();
+    saveState();
+  });
+});
+
+
+/* ---------- Helpers ---------- */
+const byId = id => PEOPLE.find(p=>p.id===id);
+const initials = n => n.split(/\s+/).map(s=>s[0]).join('').toUpperCase();
+const uid = () => 'p'+Math.random().toString(36).slice(2,8);
+
+function syncWheelFromSelected(){
+  const assigned = new Set([...teamA.map(p=>p.id), ...teamB.map(p=>p.id)]);
+  wheelIds = [...selectedIds].filter(id => !assigned.has(id));
+}
+
+/* ---------- Format helpers ---------- */
+function targetSizes(){
+  const n=[...selectedIds].length, v=formatSel.value||'2v2';
+  if(v==='2v2') return [2,2];
+  if(v==='2v1') return [2,1];
+  if(v==='3v3') return [3,3];
+  if(v==='3v2') return [3,2];
+  return [Math.ceil(n/2),Math.floor(n/2)];
+}
+const remaining = () => { const [A,B]=targetSizes(); return [A-teamA.length,B-teamB.length]; };
+function addToTeam(letter, person){
+  // don't add if already placed anywhere
+  if (teamA.some(x=>x.id===person.id) || teamB.some(x=>x.id===person.id)) return;
+
+  const [A,B] = targetSizes();
+  if (letter==='A' && teamA.length < A)      teamA.push(person);
+  else if (letter==='B' && teamB.length < B) teamB.push(person);
+  saveState();
+}
+
+/* ---------- Roster ---------- */
+function renderRoster(){
+  rosterEl.innerHTML = "";
+  PEOPLE.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "person";
+    row.draggable = true;
+    row.dataset.id = p.id;
+    row.title = "Drag onto a team badge";
+
+    const av = document.createElement("div");
+    av.className = "avatar";
+    av.style.background = p.color || "#132b57";
+    av.style.overflow = "hidden";
+
+    if (p.photo) {
+      const img = document.createElement("img");
+      img.src = p.photo; img.alt = p.name;
+      img.style.width = "100%"; img.style.height = "100%"; img.style.objectFit = "cover";
+      img.draggable = false;
+      av.appendChild(img);
+    } else {
+      av.textContent = initials(p.name);
+    }
+
+    const name = document.createElement("div");
+    name.textContent = p.name;
+    name.style.flex = "1";
+
+    const toggle = document.createElement("button");
+    const isSelected = selectedIds.has(p.id);
+    toggle.className = "btn toggle" + (isSelected ? " active" : "");
+    toggle.textContent = isSelected ? "On Wheel" : "Off";
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (selectedIds.has(p.id)) {
+        selectedIds.delete(p.id);
+        wheelIds = wheelIds.filter(id => id !== p.id);
+      } else {
+        selectedIds.add(p.id);
+        if (!teamA.some(x => x.id === p.id) && !teamB.some(x => x.id === p.id)) {
+          wheelIds.push(p.id);
+        }
+      }
+      saveState();
+      syncWheelFromSelected();
+      drawWheel();
+      renderRoster();
+    });
+
+    let delBtn = null;
+    if (!DEFAULT_IDS.has(p.id)) {
+      delBtn = document.createElement("button");
+      delBtn.className = "icon-del";
+      delBtn.textContent = "×";
+      delBtn.title = "Remove from roster";
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removePerson(p.id);
+      });
+    }
+
+    row.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", p.id);
+      PlayerPanel.close();
+    });
+
+    row.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      PlayerPanel.open(p, row);
+    });
+
+    row.appendChild(av);
+    row.appendChild(name);
+    row.appendChild(toggle);
+    if (delBtn) row.appendChild(delBtn);
+    rosterEl.appendChild(row);
+  });
+}
+
+/* Remove custom person helper */
+function removePerson(id){
+  teamA = teamA.filter(p => p.id !== id);
+  teamB = teamB.filter(p => p.id !== id);
+  selectedIds.delete(id);
+  wheelIds = wheelIds.filter(x => x !== id);
+  if (chooser && chooser.id === id) {
+    chooser = null; fofChoice = null; setFoFUI(false); lockSpin(false); modeState.textContent = '';
+  }
+  PEOPLE = PEOPLE.filter(p => p.id !== id);
+  saveState();
+  syncWheelFromSelected();
+  drawWheel();
+  updateMatchupUI();
+  renderRoster();
+}
+
+/* ---------- Wheel paint + labels ---------- */
+function resetRotor(){
+  if (window._spinning) return;
+  rotor.style.transition = 'none';
+  rotor.style.transform  = 'rotate(0deg)';
+  void rotor.offsetHeight;
+  rotor.style.transition = '';
+}
+
+/* Draw a photo aligned to wedge centerline (radial) */
+function drawRadialPhoto(ctx, img, cx, cy, R, a0, a1) {
+  const mid = (a0 + a1) / 2;
+  const iw = img.naturalWidth  || img.width;
+  const ih = img.naturalHeight || img.height;
+  const scale = Math.max((2 * R) / iw, (2 * R) / ih);
+  const dw = iw * scale, dh = ih * scale;
+  const lift = R * 0.80; // push image toward center so faces sit better
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(mid + Math.PI / 2);
+  ctx.drawImage(img, -dw / 2, -dh + lift, dw, dh);
+  ctx.restore();
+}
+
+let _renderToken = 0;
+
+function drawWheel() {
+  resetRotor();
+  labelsEl.innerHTML = '';
+
+  if (wheelIds.length === 0) syncWheelFromSelected();
+
+  const ids = wheelIds.slice();
+  const n   = ids.length;
+  const R   = 160;
+  const cx  = 160, cy = 160;
+
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+if (!n) {
+  // Bump the render token so ANY pending paints from earlier frames are ignored
+  const rosieToken = ++_renderToken;
+
+  // Clear any DOM labels just in case
+  labelsEl.innerHTML = '';
+
+  // Optional: also reset the rotor transform so no leftover rotation is visible
+  rotor.style.transition = 'none';
+  rotor.style.transform  = 'rotate(0deg)';
+  void rotor.offsetHeight; // force reflow
+  rotor.style.transition = '';
+
+  loadImage('assets/players/TrivPic_Rosie.png').then(img => {
+    // If another draw happened since we started, abort this paint
+    if (rosieToken !== _renderToken) return;
+
+    // Hard clear before drawing Rosie to wipe any stray strokes
+    ctx.save();
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Clip to the wheel circle and draw Rosie with NO border
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    drawImageCover(ctx, img, cx, cy, R * 2);
+    ctx.restore();
+  }).catch(() => { /* adjust path/ext if needed */ });
+
+  return;
+}
+
+
+
+
+
+  // Fixed arc geometry for this frame
+  const step = (2 * Math.PI) / n;
+  const arcs = ids.map((id, i) => ({
+    id,
+    p: byId(id),
+    a0: -Math.PI/2 + i*step,
+    a1: -Math.PI/2 + (i+1)*step
+  }));
+
+  const token = ++_renderToken;
+
+  // Helper to draw a single slice (color + optional photo + divider)
+  function paintSlice(p, a0, a1) {
+    // base fill
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a1, false); ctx.closePath(); ctx.clip();
+    ctx.fillStyle = p.color || '#3b82f6';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    // divider (skip if 1 slice)
+    if (n > 1) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(10,19,38,.35)';
+      ctx.lineWidth   = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + R * Math.cos(a1), cy + R * Math.sin(a1));
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // First pass: paint all base slices so the wheel appears immediately
+  arcs.forEach(({p, a0, a1}) => paintSlice(p, a0, a1));
+
+  // Load + paint photos inside their slice clips
+  const loads = arcs.map(({p, a0, a1}) => {
+    if (!p.photo) return Promise.resolve();
+    return loadImage(p.photo).then(img => {
+      if (token !== _renderToken) return;
+
+      // re-clip to the slice and paint the photo
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, a0, a1, false);
+      ctx.closePath();
+      ctx.clip();
+
+      if (n === 1) {
+        // One slice left: keep the picture upright and fill the whole wheel
+        drawImageCover(ctx, img, cx, cy, R * 2);
+      } else {
+        // Multiple slices: keep the radial orientation you already use
+        drawRadialPhoto(ctx, img, cx, cy, R, a0, a1);
+      }
+
+      ctx.restore();
+
+      // redraw divider over the photo (skip if 1 slice)
+      if (n > 1) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(10,19,38,.35)';
+        ctx.lineWidth   = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(a1), cy + R * Math.sin(a1));
+        ctx.stroke();
+        ctx.restore();
+      }
+    }).catch(()=>{ /* keep color fallback */ });
+  });
+
+  // One-and-done overlay: rims + names (no alpha), AFTER all photos resolve
+  function paintRimsAndNamesAll() {
+    const rOuter = R, rInner = R - BORDER_THICK;
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    arcs.forEach(({p, a0, a1}) => {
+      // rim fill (opaque)
+      ringSegmentPath(ctx, cx, cy, rOuter, rInner, a0, a1);
+      ctx.fillStyle = p.color || '#3b82f6';
+      ctx.fill();
+
+      // rim edges
+      ctx.strokeStyle = 'rgba(10,19,38,.65)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, rOuter - 1, a0, a1, false); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, rInner + 1, a0, a1, false); ctx.stroke();
+
+      // curved name
+      const rText = rInner + (BORDER_THICK/2) - 2;
+
+      if (n === 1) {
+        // Curved text centered at TOP
+        const midTop = -Math.PI / 2;              // top center
+        const span   = (140 * Math.PI) / 180;     // arc width for text
+        const pad    = (6 * Math.PI) / 180;       // same NAME_PAD_DEG padding
+        const usableSpan = Math.max(0, span - 2 * pad);
+
+        // Scale text if needed
+        ctx.save();
+        ctx.font = 'bold 18px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#dff3ff';
+        const baseWidth  = ctx.measureText(p.name).width;
+        const maxArcLen  = rText * usableSpan;
+        if (baseWidth > maxArcLen) {
+          const scale = Math.max(0.75, maxArcLen / baseWidth);
+          const size  = Math.floor(18 * scale);
+          ctx.font = `bold ${size}px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial`;
+        }
+
+        // Measure characters
+        const widths = [...p.name].map(ch => ctx.measureText(ch).width);
+        const total  = widths.reduce((a,b) => a + b, 0);
+        const start  = midTop - (total / rText) / 2; // perfectly center
+
+        // Stroke for contrast
+        ctx.strokeStyle = 'rgba(10,19,38,.9)';
+        ctx.lineWidth   = 3;
+
+        let acc = 0;
+        for (let i = 0; i < p.name.length; i++) {
+          const cw    = widths[i];
+          const angle = start + (acc + cw/2) / rText;
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(angle + Math.PI/2);
+          ctx.strokeText(p.name[i], 0, -rText);
+          ctx.fillText(p.name[i],   0, -rText);
+          ctx.restore();
+          acc += cw;
+        }
+        ctx.restore();
+
+      } else {
+        drawArcText(ctx, p.name, cx, cy, rText, a0, a1);
+      }
+    });
+    ctx.restore();
+  }
+
+  Promise.allSettled(loads).then(() => {
+    if (token !== _renderToken) return;
+    paintRimsAndNamesAll();
+  });
+}
+
+/* ---------- Spin ---------- */
+function spin(){
+  if (wheelIds.length===0 || window._spinning || window._spinLocked) return;
+  const ids=wheelIds.slice();
+  const slices=ids.length;
+  const sliceDeg=360/slices;
+  const plannedIdx=Math.floor(Math.random()*slices);
+  const fullTurns=4+Math.floor(Math.random()*3);
+  const centerDeg=plannedIdx*sliceDeg+sliceDeg/2+0.001;
+  const targetDeg=fullTurns*360+centerDeg;
+
+  window._spinning=true;
+  rotor.style.transition='transform 2200ms cubic-bezier(.2,1,.2,1)';
+  rotor.style.transform=`rotate(-${targetDeg}deg)`;
+  const onEnd=(ev)=>{
+    if(ev.propertyName!=='transform')return;
+    rotor.removeEventListener('transitionend',onEnd);
+    window._spinning=false;
+    onPick(ids[plannedIdx]);
+  };
+  rotor.addEventListener('transitionend',onEnd,{once:true});
+}
+document.getElementById('spinBtn').addEventListener('click',spin);
+rotor.addEventListener('click',spin);
+
+/* ---------- Badges (SVG) ---------- */
+function renderBadgeSVG(container, team){
+  const size = 150, R = 62, cx = size/2, cy = size/2;
+  const can = document.createElement('canvas');
+  can.width = size; can.height = size;
+  const ctx = can.getContext('2d');
+
+  const wedgePath = (a0, a1) => {
+    const p = new Path2D();
+    p.moveTo(cx, cy);
+    p.arc(cx, cy, R, a0, a1, false);
+    p.closePath();
+    return p;
+  };
+
+  const drawInitials = (person, a0, a1) => {
+    const mid = (a0 + a1)/2;
+    const th = (a1 - a0);
+    const rr = Math.min(52, Math.max(38, (2*R*Math.sin(th/2))/(3*(th/2))));
+    const tx = cx + Math.cos(mid)*rr;
+    const ty = cy + Math.sin(mid)*rr;
+    ctx.fillStyle = '#0a1326';
+    ctx.font = 'bold 34px ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(initials(person.name), tx, ty);
+  };
+
+  ctx.fillStyle = '#0e1f42';
+  ctx.beginPath(); ctx.arc(cx, cy, R+10, 0, Math.PI*2); ctx.fill();
+
+  const n = Math.min(team.length, 4);
+  if (n > 0){
+    const span = (2*Math.PI)/n;
+
+    for (let i = 0; i < n; i++){
+      const person = team[i];
+      const a0 = -Math.PI/2 + i*span;
+      const a1 = -Math.PI/2 + (i+1)*span;
+      const path = wedgePath(a0, a1);
+
+      ctx.save();
+      ctx.clip(path);
+      ctx.fillStyle = person?.color || '#9ad8ff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.restore();
+
+      drawInitials(person, a0, a1);
+
+      if (person?.photo){
+        loadImage(person.photo).then(img => {
+          ctx.save();
+          ctx.clip(path);
+          drawImageCover(ctx, img, cx, cy, R*2);
+          ctx.restore();
+        }).catch(()=>{});
+      }
+    }
+
+    if (n === 2){
+      const d = R * Math.SQRT1_2;
+      ctx.strokeStyle = 'white'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(cx-d, cy-d); ctx.lineTo(cx+d, cy+d); ctx.stroke();
+    } else if (n >= 3){
+      ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 4;
+      for (let k = 0; k < n; k++){
+        const ang = -Math.PI/2 + k*span;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(ang)*R, cy + Math.sin(ang)*R);
+        ctx.stroke();
+      }
+    }
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.arc(cx, cy, R+10, 0, Math.PI*2); ctx.stroke();
+
+  container.innerHTML = '';
+  container.appendChild(can);
+}
+
+function renderScore(){
+  const aWins = TRACKED_GAMES.filter(g=>g.winner==='A').length + (MANUAL_A|0);
+  const bWins = TRACKED_GAMES.filter(g=>g.winner==='B').length + (MANUAL_B|0);
+
+  scoreEl.innerHTML = `
+    <div class="score-row"><div id="sbA">${teamANameVal||'Team A'}</div><div class="faint">${aWins}</div></div>
+    <div class="score-row"><div id="sbB">${teamBNameVal||'Team B'}</div><div class="faint">${bWins}</div></div>
+  `;
+}
+
+
+
+function updateMatchupUI(){
+  teamAList.innerHTML=teamA.map(p=>`<span class="chip">${p.name}<button class="rem" data-team="A" data-id="${p.id}">✕</button></span>`).join('');
+  teamBList.innerHTML=teamB.map(p=>`<span class="chip">${p.name}<button class="rem" data-team="B" data-id="${p.id}">✕</button></span>`).join('');
+  renderBadgeSVG(badgeA,teamA); renderBadgeSVG(badgeB,teamB);
+  renderScore();
+  autoFillIfDetermined();
+}
+document.addEventListener('click',(e)=>{
+  const btn=e.target.closest('button.rem'); if(!btn) return;
+  const {team,id}=btn.dataset;
+  if(team==='A') teamA=teamA.filter(p=>p.id!==id); else teamB=teamB.filter(p=>p.id!==id);
+  if(selectedIds.has(id) && !wheelIds.includes(id)) wheelIds.push(id);
+  allowAutoFill = false;
+  syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+});
+
+/* ---------- Friend-or-Foe UI ---------- */
+let spinLocked=false;
+function setFoFUI(show){friendBtn.style.display=show?'inline-block':'none'; foeBtn.style.display=show?'inline-block':'none'; if(!show){friendBtn.classList.remove('active'); foeBtn.classList.remove('active');}}
+function lockSpin(lock){spinLocked=lock; window._spinLocked=lock; spinBtn.disabled=lock;}
+friendBtn.addEventListener('click',()=>{if(chooser){fofChoice='friend'; friendBtn.classList.add('active'); foeBtn.classList.remove('active'); lockSpin(false); modeState.textContent=`${chooser.name} chose FRIEND`; saveState();}});
+foeBtn.addEventListener('click',()=>{if(chooser){fofChoice='foe'; foeBtn.classList.add('active'); friendBtn.classList.remove('active'); lockSpin(false); modeState.textContent=`${chooser.name} chose FOE`; saveState();}});
+
+/* ---------- Auto-fill helper (only when forced) ---------- */
+function autoFillIfDetermined(startDelayMs = 3000, stepDelayMs = 1200){
+  if (!allowAutoFill) return;
+
+  // Debounce: always clear any pending run and schedule a fresh one
+  if (_autoFillTimer) {
+    clearTimeout(_autoFillTimer);
+    _autoFillTimer = null;
+  }
+
+  _autoFillTimer = setTimeout(() => {
+    _autoFillTimer = null; // we’re running now
+
+    const [A, B] = targetSizes();
+    const rA = A - teamA.length;
+    const rB = B - teamB.length;
+    const leftIds = [...wheelIds];
+
+    if (leftIds.length === 0) { allowAutoFill = false; return; }
+
+    const pushSeq = (ids, team) => {
+      ids.forEach((id, i) => {
+        setTimeout(() => {
+          const p = byId(id);
+          if (!p) return;
+          // remove from wheel and add
+          wheelIds = wheelIds.filter(x => x !== id);
+          addToTeam(team, p);
+          syncWheelFromSelected();
+          drawWheel();
+          updateMatchupUI();
+          saveState();
+        }, i * stepDelayMs);
+      });
+    };
+
+    // Case A: one side is already full → rest must go to the other side
+    if (rA === 0 && leftIds.length > 0) { allowAutoFill = false; pushSeq(leftIds, 'B'); return; }
+    if (rB === 0 && leftIds.length > 0) { allowAutoFill = false; pushSeq(leftIds, 'A'); return; }
+
+    // Case B: exactly one player left and exactly one slot total
+    if (leftIds.length === 1 && (rA === 1) !== (rB === 1)) {
+      allowAutoFill = false;
+      pushSeq(leftIds, (rA === 1) ? 'A' : 'B');
+      return;
+    }
+
+    // Not forced → do nothing
+    allowAutoFill = false;
+  }, startDelayMs);
+}
+
+
+function assignAlternating(person){
+  const [A, B] = targetSizes();
+  const rA = A - teamA.length;
+  const rB = B - teamB.length;
+
+  let team = nextTeam;
+  if (team === 'A' && rA <= 0 && rB > 0) team = 'B';
+  if (team === 'B' && rB <= 0 && rA > 0) team = 'A';
+
+  addToTeam(team, person);
+  nextTeam = (team === 'A') ? 'B' : 'A';
+
+  const left = wheelIds.length;
+  const rA2  = A - teamA.length;
+  const rB2  = B - teamB.length;
+
+  allowAutoFill =
+    (rA2 === 0 || rB2 === 0) ||
+    (left === 1 && ((rA2 === 1) !== (rB2 === 1)));
+
+  autoFillIfDetermined(); // this now waits 3s on its own
+}
+
+
+
+function onPick(id){
+  // remove landed player from the wheel
+  wheelIds = wheelIds.filter(x => x !== id);
+  drawWheel();
+
+  const person = byId(id);
+  if (!person) { updateMatchupUI(); saveState(); return; }
+
+  if (mode === 'fof') {
+    // --- Friend or Foe flow ---
+    if (!chooser) {
+      chooser = person;
+      fofChoice = null;
+      setFoFUI(true);
+      lockSpin(true);
+      modeState.textContent = `${person.name} — choose Friend or Foe`;
+      saveState();
+      return;
+    }
+
+    const teamOf = (p) =>
+      teamA.some(x=>x.id===p.id) ? 'A' :
+      teamB.some(x=>x.id===p.id) ? 'B' : null;
+
+    const [rA, rB] = remaining();
+    let chooserTeam = teamOf(chooser);
+    if (!chooserTeam) chooserTeam = (rA >= rB) ? 'A' : 'B';
+    const otherTeam = (chooserTeam === 'A') ? 'B' : 'A';
+
+    addToTeam(chooserTeam, chooser);
+
+    const choice = fofChoice || 'friend';
+    if (choice === 'friend') addToTeam(chooserTeam, person);
+    else                     addToTeam(otherTeam,  person);
+
+    // allow forced autofill (pair last two, fill last slot, etc.)
+    allowAutoFill = true;
+    autoFillIfDetermined();
+    allowAutoFill = false;
+
+    if (wheelIds.length > 0) {
+      chooser = person;          // next chooser is the person just landed
+      fofChoice = null;
+      setFoFUI(true);
+      lockSpin(true);
+      modeState.textContent = `${person.name} — choose Friend or Foe`;
+    } else {
+      chooser = null;
+      fofChoice = null;
+      setFoFUI(false);
+      lockSpin(false);
+      modeState.textContent = '';
+    }
+
+    syncWheelFromSelected();
+    drawWheel();
+    updateMatchupUI();
+    saveState();
+    return;
+  }
+
+  // --- Normal flow (this was missing) ---
+  assignAlternating(person);     // handles nextTeam + optional autofill
+  syncWheelFromSelected();
+  drawWheel();
+  updateMatchupUI();
+  saveState();
+}
+
+
+/* ---------- Games + Score ---------- */
+function renderGames(){
+  const fav=document.getElementById('favList'), more=document.getElementById('moreList');
+
+  // Render the link lists (visual)
+  fav.innerHTML=FAVORITES.map(g=>`<div class="game">
+    <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
+      <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span><span>↗</span>
+    </a>
+  </div>`).join('');
+
+  more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
+    <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
+      <span class="glabel"><span class="ico">🎮</span><span>${g.title}</span></span><span>↗</span>
+    </a>
+  </div>`).join('');
+
+  // Clicking a game adds it to the tracker (unique), and tries to show it there.
+function attachHandlers(container){
+  container.querySelectorAll('a.game-link').forEach(a=>{
+    a.addEventListener('click',(e)=>{
+      e.preventDefault(); // we’ll open it ourselves
+      const id    = a.dataset.gameid;
+      const title = a.dataset.title;
+      const url   = a.getAttribute('href');
+
+      // 1) log it once in the tracker
+      addGameToTracker({id, title, url});
+
+      // 2) open the game in a new tab
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  });
+}
+attachHandlers(fav);
+attachHandlers(more);
+}
+
+function upsertTrackedGame(game){
+  const existing = TRACKED_GAMES.find(g=>g.id===game.id);
+  if (existing) return existing;
+  const row = { id: game.id, title: game.title, url: game.url, winner: null, shown: true };
+  TRACKED_GAMES.push(row);
+  return row;
+}
+
+function addGameToTracker(game){
+  const g = upsertTrackedGame(game);
+  renderGameTracker();
+  saveState();
+}
+
+function renderGameTracker(){
+  const wrap = document.getElementById('tracker');
+  if (!wrap) return;
+
+  const nameA = teamAName.value || 'Team A';
+  const nameB = teamBName.value || 'Team B';
+
+  if (TRACKED_GAMES.length === 0){
+    wrap.innerHTML = `<div class="note">No games logged yet. Click a game to add it here.</div>`;
+  } else {
+    wrap.innerHTML = TRACKED_GAMES.map(g=>{
+      const aSel = g.winner==='A' ? 'active' : '';
+      const bSel = g.winner==='B' ? 'active' : '';
+      return `
+        <div class="track-card" data-id="${g.id}">
+          <div class="track-top">
+            <div class="track-title">${g.title}</div>
+            <button class="tr-remove" title="Remove" data-action="remove">×</button>
+          </div>
+          <div class="pick-row">
+            <button class="pick ${aSel}" data-action="win" data-team="A">${nameA}</button>
+            <button class="pick ${bSel}" data-action="win" data-team="B">${nameB}</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Append manual points footer
+  const manual = document.createElement('div');
+  manual.className = 'manual-points';
+  manual.innerHTML = `
+    <div class="mp-row">
+      <div class="mp-side">
+        <strong>${nameA}</strong>
+        <button class="mp-btn" data-mp="A" data-delta="-1">−</button>
+        <span class="mp-val" id="mpA">${MANUAL_A|0}</span>
+        <button class="mp-btn" data-mp="A" data-delta="1">+</button>
+      </div>
+      <div class="mp-side">
+        <strong>${nameB}</strong>
+        <button class="mp-btn" data-mp="B" data-delta="-1">−</button>
+        <span class="mp-val" id="mpB">${MANUAL_B|0}</span>
+        <button class="mp-btn" data-mp="B" data-delta="1">+</button>
+      </div>
+    </div>
+  `;
+  wrap.appendChild(manual);
+
+  // Wire up per-card buttons
+  wrap.querySelectorAll('.track-card').forEach(card=>{
+    const id = card.dataset.id;
+    const g = TRACKED_GAMES.find(x=>x.id===id);
+    if (!g) return;
+
+    card.querySelector('[data-action="remove"]').addEventListener('click', ()=>{
+      TRACKED_GAMES = TRACKED_GAMES.filter(x=>x.id!==g.id);
+      renderScore(); renderGameTracker(); saveState();
+    });
+
+    card.querySelectorAll('[data-action="win"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const team = btn.dataset.team; // 'A' or 'B'
+        g.winner = (g.winner === team) ? null : team; // toggle if clicked again
+        renderScore(); renderGameTracker(); saveState();
+      });
+    });
+  });
+
+  // Wire up manual points +/- buttons
+  wrap.querySelectorAll('.mp-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const who = b.dataset.mp;         // 'A' or 'B'
+      const delta = parseInt(b.dataset.delta,10);
+      if (who==='A') MANUAL_A = Math.max(0, (MANUAL_A|0) + delta);
+      else MANUAL_B = Math.max(0, (MANUAL_B|0) + delta);
+      renderScore(); renderGameTracker(); saveState();
+    });
+  });
+}
+
+
+
+
+
+/* ---------- Save / Restore ---------- */
+function saveState(){
+  const state={
+    PEOPLE,
+    selectedIds:[...selectedIds],
+    wheelIds,mode,chooser:chooser?.id||null,fofChoice,
+    teamA:teamA.map(p=>p.id),
+    teamB:teamB.map(p=>p.id),
+    nextTeam,format:formatSel.value,
+    teamAName:teamAName.value,
+    teamBName:teamBName.value,
+    trackedGames: TRACKED_GAMES,
+    manualA: MANUAL_A,
+    manualB: MANUAL_B
+  };
+  localStorage.setItem('trivia_state',JSON.stringify(state));
+}
+
+
+function restoreState(){
+  const raw=localStorage.getItem('trivia_state');
+  if(!raw){
+    PEOPLE=[...DEFAULT_PEOPLE];
+    selectedIds=new Set(PEOPLE.slice(0,4).map(p=>p.id));
+    wheelIds=[...selectedIds];
+    mode='normal'; chooser=null; fofChoice=null;
+    teamA=[]; teamB=[]; nextTeam='A';
+    teamANameVal='Team A'; teamBNameVal='Team B'; savedFormat='2v2';
+    return;
+  }
+  try{
+    const s=JSON.parse(raw);
+    PEOPLE=s.PEOPLE||[...DEFAULT_PEOPLE];
+    selectedIds=new Set(s.selectedIds||PEOPLE.slice(0,4).map(p=>p.id));
+    wheelIds=s.wheelIds||[...selectedIds];
+    mode=s.mode||'normal';
+    chooser=s.chooser?PEOPLE.find(p=>p.id===s.chooser):null;
+    fofChoice=s.fofChoice||null;
+    teamA=(s.teamA||[]).map(id=>PEOPLE.find(p=>p.id===id)).filter(Boolean);
+    teamB=(s.teamB||[]).map(id=>PEOPLE.find(p=>p.id===id)).filter(Boolean);
+    nextTeam=s.nextTeam||'A';
+    teamANameVal=s.teamAName||'Team A';
+    teamBNameVal=s.teamBName||'Team B';
+    savedFormat=s.format||'2v2';
+    TRACKED_GAMES = Array.isArray(s.trackedGames) ? s.trackedGames : [];
+MANUAL_A = Number.isFinite(s.manualA) ? s.manualA : 0;
+MANUAL_B = Number.isFinite(s.manualB) ? s.manualB : 0;
+
+
+  }catch{
+    PEOPLE=[...DEFAULT_PEOPLE];
+    selectedIds=new Set(PEOPLE.slice(0,4).map(p=>p.id));
+    wheelIds=[...selectedIds];
+    mode='normal'; chooser=null; fofChoice=null;
+    teamA=[]; teamB=[]; nextTeam='A';
+    teamANameVal='Team A'; teamBNameVal='Team B'; savedFormat='2v2';
+  }
+
+  // Backfill defaults (photo/color) if any saved record is missing fields
+  const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
+  PEOPLE = PEOPLE.map(p => ({ ...defaultsById[p.id], ...p }));
+}
+
+/* ---------- Controls ---------- */
+// Add Guest (roster)
+function addGuest(){
+  const name = newNameEl.value.trim();
+  if (!name) { newNameEl.focus(); return; }
+  const color = newColorEl.value || '#6ee7b7';
+
+  const person = { id: uid(), name, color, photo: '' }; // no photo by default
+  PEOPLE.push(person);
+
+  // put them on the wheel by default
+  selectedIds.add(person.id);
+  wheelIds.push(person.id);
+
+  // clear input
+  newNameEl.value = '';
+
+  // refresh UI + persist
+  renderRoster();
+  syncWheelFromSelected();
+  drawWheel();
+  updateMatchupUI();
+  saveState();
+}
+
+// click + Enter support
+addBtn.addEventListener('click', addGuest);
+newNameEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addGuest();
+});
+
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  resetRotor();
+  teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false);
+  wheelIds=[...selectedIds]; nextTeam='A'; setFoFUI(false); modeState.textContent='';
+
+  // ⬇️ Clear games and reset scoreboard from current team name inputs
+  TRACKED_GAMES = [];
+  teamANameVal = teamAName.value || 'Team A';
+  teamBNameVal = teamBName.value || 'Team B';
+  renderGameTracker();
+  renderScore();
+
+  syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+});
+
+document.getElementById('clearTeamsBtn').addEventListener('click',()=>{
+  teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false); nextTeam='A';
+  syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+});
+document.getElementById('newGameBtn').addEventListener('click',()=>{
+  if(confirm('Start a NEW GAME? This clears teams & scores (keeps players).')){
+    resetRotor(); teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false);
+    mode='normal'; nextTeam='A'; wheelIds=[...selectedIds]; setFoFUI(false); modeState.textContent='';
+
+    // ⬇️ Clear games and reset scoreboard labels to whatever is typed now
+    TRACKED_GAMES = [];
+    teamANameVal = teamAName.value || 'Team A';
+    teamBNameVal = teamBName.value || 'Team B';
+    renderGameTracker();
+    renderScore();
+
+    syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+  }
+});
+
+modeNormal.addEventListener('click',()=>{mode='normal'; modeState.textContent=''; setFoFUI(false); lockSpin(false); modeFoF.classList.add('secondary'); modeNormal.classList.remove('secondary'); saveState();});
+modeFoF.addEventListener('click',()=>{mode='fof'; modeState.textContent='Friend or Foe enabled'; modeFoF.classList.remove('secondary'); modeNormal.classList.add('secondary'); saveState();});
+formatSel.addEventListener('change',()=>{
+  teamA=[]; teamB=[]; nextTeam='A';
+  syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+});
+
+teamAName.addEventListener('input', ()=>{
+  teamANameVal = teamAName.value || 'Team A';      // keep this var in sync
+  document.getElementById('sbA').textContent = teamANameVal; // update scoreboard label now
+  renderScore();            // recompute totals display
+  renderGameTracker();      // refresh tracker radio labels to the new name
+  saveState();
+});
+
+teamBName.addEventListener('input', ()=>{
+  teamBNameVal = teamBName.value || 'Team B';
+  document.getElementById('sbB').textContent = teamBNameVal;
+  renderScore();
+  renderGameTracker();
+  saveState();
+});
+
+
+/* ---------- Player Panel (anchored, large) ---------- */
+const PlayerPanel = (() => {
+  const el = document.createElement('div');
+  el.className = 'player-panel';
+  el.innerHTML = `
+    <div class="pp-head">
+      <div class="pp-photo" id="ppPhoto"></div>
+      <div>
+        <div class="pp-name" id="ppName"></div>
+        <div class="pp-sub" id="ppSub">Click a player to edit</div>
+      </div>
+      <button class="pp-close" id="ppClose" title="Close">×</button>
+    </div>
+    <div class="pp-controls">
+      <div class="pp-label">Color</div>
+      <input type="color" id="ppColor" value="#6ee7b7" />
+    </div>
+  `;
+  document.body.appendChild(el);
+
+  const photoEl = el.querySelector('#ppPhoto');
+  const nameEl  = el.querySelector('#ppName');
+  const colorEl = el.querySelector('#ppColor');
+  const closeEl = el.querySelector('#ppClose');
+
+  let currentPlayer = null;
+
+  function clamp(val, min, max){ return Math.max(min, Math.min(max, val)); }
+
+  function positionNear(anchor){
+    const rect = anchor.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    const desiredX = rect.right + 12 + scrollX;
+    const desiredY = rect.top + scrollY - 8;
+
+    const panelW = el.offsetWidth || 600;
+    const panelH = el.offsetHeight || 220;
+
+    const maxX = scrollX + document.documentElement.clientWidth  - panelW - 12;
+    const maxY = scrollY + document.documentElement.clientHeight - panelH - 12;
+
+    let x = desiredX;
+    if (x > maxX) x = rect.left + scrollX - panelW - 12;
+
+    const y = clamp(desiredY, scrollY + 12, maxY);
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  }
+
+  function open(p, anchorEl){
+    currentPlayer = p;
+
+    nameEl.textContent = p.name;
+
+    photoEl.innerHTML = '';
+    if (p.photo) {
+      const img = document.createElement('img');
+      img.src = p.photo; img.alt = p.name; img.draggable = false;
+      photoEl.appendChild(img);
+    } else {
+      photoEl.textContent = initials(p.name);
+    }
+
+    colorEl.value = (p.color && /^#([0-9a-f]{3}){1,2}$/i.test(p.color)) ? p.color : '#6ee7b7';
+
+    el.classList.add('show');
+    requestAnimationFrame(()=> positionNear(anchorEl));
+  }
+
+  function close(){
+    el.classList.remove('show');
+    currentPlayer = null;
+  }
+
+  colorEl.addEventListener('input', () => {
+    if (!currentPlayer) return;
+    currentPlayer.color = colorEl.value;
+    saveState();
+    drawWheel();
+    updateMatchupUI();
+    renderRoster();
+  });
+
+  closeEl.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && el.classList.contains('show')) close(); });
+  document.addEventListener('click', (e) => {
+    if (!el.classList.contains('show')) return;
+    if (!el.contains(e.target) && !e.target.closest('.person')) close();
+  });
+
+  window.addEventListener('resize', () => { if (el.classList.contains('show')) close(); });
+
+  return { open, close };
+})();
+
+/* ---------- Init ---------- */
+renderRoster();
+syncWheelFromSelected();
+drawWheel();
+renderGames();
+
+// make sure names + tracker show what we restored
+teamAName.value = teamANameVal || 'Team A';
+teamBName.value = teamBNameVal || 'Team B';
+renderGameTracker();   // <- show saved games
+renderScore();         // <- scoreboard from saved wins + manual points
+
+formatSel.value = savedFormat || '2v2';
+updateMatchupUI();     // keeps badges/wheel/score in sync
+
+</script>
+</body>
+</html>
+
