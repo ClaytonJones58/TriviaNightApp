@@ -19,7 +19,7 @@
     h1{margin:0;font-size:24px}
 
     /* grid: keep middle flexible */
-    .grid{display:grid;grid-template-columns:minmax(340px,400px) minmax(0,1fr) 320px;gap:16px;align-items:start}
+    .grid{display:grid;grid-template-columns:390px 1fr 320px;gap:16px;align-items:start}
 
     .card{background:#0f2347;border-radius:18px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
     .section-title{margin:0 0 10px;font-weight:700;opacity:.9}
@@ -49,7 +49,7 @@
     .wheel-wrap{display:grid;gap:12px;grid-template-rows:auto 1fr auto}
     .wheel-area{position:relative;display:grid;place-items:center;height:calc(min(78vw,420px) + 24px)}
     .pointer{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--accent)}
-    .rotor{position:relative;width:min(78vw,420px);height:min(78vw,420px);margin:6px auto 0;transform-origin:50% 50%;will-change:transform}
+    .rotor{position:relative;width:min(100%,420px);height:min(100%,420px);margin:6px auto 0;transform-origin:50% 50%;will-change:transform}
     #wheelCanvas{width:100%;height:100%}
     .wheel{position:absolute;inset:0;border-radius:50%;box-shadow:0 12px 40px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.06)}
     .labels{position:absolute;inset:0}
@@ -58,6 +58,7 @@
     /* --- Roster --- */
     .roster{display:grid;gap:8px}
     .person{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;background:#10254a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+    .person .btn.toggle{margin-left:auto;min-width:92px}
     .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#001;overflow:hidden}
     .addperson{display:flex;gap:8px;margin-top:10px}
     .addperson input[type="text"]{flex:1;min-width:120px;background:#132b57;border:0;padding:8px 10px;border-radius:10px;color:var(--text)}
@@ -69,6 +70,7 @@
 
     /* --- Matchup --- */
     .teams{display:grid;grid-template-columns:1fr 40px 1fr;align-items:start;row-gap:10px}
+    .teamA,.teamB{display:flex;flex-direction:column;align-items:center}
     .badge{width:150px;height:150px;margin:0 auto 16px auto;display:block}
     .team-name{display:flex;flex-direction:column;gap:6px;width:100%;max-width:260px;margin:10px auto 0 auto}
     .team-name label{line-height:1}
@@ -76,8 +78,6 @@
     .team-members{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;max-width:260px}
     .chip{padding:6px 8px;background:#132b57;border-radius:999px;font-size:13px;display:flex;align-items:center;gap:6px}
     .chip button{border:0;background:#0a1e3c;color:#9ccfff;border-radius:6px;padding:0 6px;cursor:pointer}
-
-    /* --- Games --- */
     .games{display:grid;gap:10px}
     .game-list{display:grid;gap:8px}
     .game a{color:var(--text);text-decoration:none;background:#132b57;padding:10px 12px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
@@ -298,10 +298,16 @@
       let ytReady=false, player=null;
       window.onYouTubeIframeAPIReady = function(){ ytReady=true; };
       const toShortId = (item)=>{
-        if (!item) return null;
-        let m = String(item).match(/\/shorts\/([a-zA-Z0-9_-]{6,})/); if (m) return m[1];
-        m = String(item).match(/[?&]v=([a-zA-Z0-9_-]{6,})/); if (m) return m[1];
-        return String(item);
+        const s = String(item || '');
+        const shortIdx = s.indexOf('/shorts/');
+        if (shortIdx >= 0){
+          let id = s.slice(shortIdx + 8);
+          const q = id.indexOf('?'); if (q >= 0) id = id.slice(0,q);
+          const amp = id.indexOf('&'); if (amp >= 0) id = id.slice(0,amp);
+          return id;
+        }
+        try { const u = new URL(s); const v = u.searchParams.get('v'); if (v) return v; } catch {}
+        return s;
       };
       const randomShortId = ()=>{
         if (Array.isArray(SUNNY_SHORTS) && SUNNY_SHORTS.length){
@@ -536,7 +542,7 @@
 
     /* ---------- Helpers ---------- */
     const byId = id => PEOPLE.find(p=>p.id===id);
-    const initials = n => n.split(/\s+/).map(s=>s[0]).join('').toUpperCase();
+    const initials = n => n.trim().split(' ').map(s=>s[0]).join('').toUpperCase();
     const uid = () => 'p'+Math.random().toString(36).slice(2,8);
 
     function syncWheelFromSelected(){
@@ -845,12 +851,12 @@
     function renderGames(){
       const fav=$('#favList'), more=$('#moreList');
       fav.innerHTML=FAVORITES.map(g=>`<div class="game">
-        <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
-          <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span><span>↗</span>
+        <a href="${g.url}" data-gameid="${g.title.trim().toLowerCase().replaceAll(' ','-')}" data-title="${g.title}" class="game-link" target="_blank">
+          <span class="glabel"><span class="ico">${g.icon||'🎮'}</span><span>${g.title}</span></span><span>↗</span>
         </a>
       </div>`).join('');
       more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
-        <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
+        <a href="${g.url}" data-gameid="${g.title.trim().toLowerCase().replaceAll(' ','-')}" data-title="${g.title}" class="game-link" target="_blank">
           <span class="glabel"><span class="ico">🎮</span><span>${g.title}</span></span><span>↗</span>
         </a>
       </div>`).join('');
@@ -868,6 +874,17 @@
     }
     function upsertTrackedGame(game){ const existing=TRACKED_GAMES.find(g=>g.id===game.id); if (existing) return existing; const row={id:game.id,title:game.title,url:game.url,winner:null,shown:true}; TRACKED_GAMES.push(row); return row; }
     function addGameToTracker(game){ upsertTrackedGame(game); renderGameTracker(); saveState(); }
+
+    // Random pick buttons
+    $('#randomFavBtn').addEventListener('click', ()=>{
+      const list = FAVORITES.map(g=>({id:g.title.trim().toLowerCase().replaceAll(' ','-'), title:g.title, url:g.url}));
+      if (!list.length) return; addGameToTracker(list[Math.floor(Math.random()*list.length)]);
+    });
+    $('#randomAllBtn').addEventListener('click', ()=>{
+      const all = [...FAVORITES.map(g=>({id:g.title.trim().toLowerCase().replaceAll(' ','-'), title:g.title, url:g.url})), ...MORE_GAMES.map(g=>({id:g.title.trim().toLowerCase().replaceAll(' ','-'), title:g.title, url:g.url}))];
+      if (!all.length) return; addGameToTracker(all[Math.floor(Math.random()*all.length)]);
+    });
+
     function renderGameTracker(){
       const wrap=$('#tracker'); if (!wrap) return;
       const nameA=teamAName.value||'Team A', nameB=teamBName.value||'Team B';
@@ -1001,7 +1018,7 @@
           <div class="pp-photo" id="ppPhoto"></div>
           <div>
             <div class="pp-name" id="ppName"></div>
-            <div class="pp-sub" id="ppSub">Tap a player to edit color</div>
+            <div class="pp-sub" id="ppSub">Click a player to edit</div>
           </div>
           <button class="pp-close" id="ppClose" title="Close">×</button>
         </div>
@@ -1043,16 +1060,13 @@
         colorEl.value = (p.color && /^#([0-9a-f]{3}){1,2}$/i.test(p.color)) ? p.color : '#6ee7b7';
 
         el.classList.add('show');
-        lockBodyScroll();
-        // On mobile it's a fixed modal; only position near on desktop
-        if (!isTouchDevice && window.innerWidth > 600) {
-          requestAnimationFrame(()=> positionNear(anchorEl));
-        }
+        lockBodyScroll();        // lock body scroll while open
+        if (!isTouchDevice) requestAnimationFrame(()=> positionNear(anchorEl));
       }
 
       function close(){
         el.classList.remove('show');
-        unlockBodyScroll();
+        unlockBodyScroll();      // restore scroll
         currentPlayer = null;
       }
 
@@ -1065,7 +1079,7 @@
       closeEl.addEventListener('click', close);
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && el.classList.contains('show')) close(); });
       document.addEventListener('click', (e)=>{ if (!el.classList.contains('show')) return; if (!el.contains(e.target) && !e.target.closest('.person')) close(); });
-      window.addEventListener('resize', ()=>{ if (el.classList.contains('show') && !isTouchDevice) close(); });
+      window.addEventListener('resize', ()=>{ if (el.classList.contains('show')) close(); });
 
       return { open, close };
     })();
