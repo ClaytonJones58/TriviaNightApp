@@ -107,6 +107,14 @@
     /* Matchup */
     .teams{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center}
     .badge{width:150px;height:150px;margin:auto}
+    /* Fix mobile overlap: make the badge canvas obey the container size */
+.badge { position: relative; }
+.badge canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;            /* remove extra inline spacing */
+}
+
     .team-name{display:flex;gap:8px;align-items:center;margin-top:8px}
     .team-name input{background:#132b57;border:0;padding:8px 10px;border-radius:10px;color:var(--text);width:180px}
     .team-members{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
@@ -146,11 +154,22 @@
     .mp-val{min-width:22px;text-align:center;font-weight:700}
 
     /* Player panel */
-    .player-panel{
-      position:absolute; z-index:9999; width:600px; background:#10254a; border-radius:16px; padding:16px;
-      box-shadow:0 18px 48px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
-      display:none; gap:16px
-    }
+   .player-panel{
+  position: fixed;              /* was absolute */
+  z-index: 10002;               /* above app UI, below the overlay tweak below */
+  width:600px;
+  background:#10254a;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 18px 48px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
+  display:none;
+  gap:16px
+}
+.player-panel.show{display:grid}
+
+/* keep the wake video overlay on top of *everything* */
+#sunnyOverlay{ z-index: 10010; }
+
     .player-panel.show{display:grid}
     .pp-head{display:grid;grid-template-columns:160px 1fr 36px;gap:16px;align-items:center}
     .pp-photo{width:160px;height:160px;border-radius:14px;overflow:hidden;background:#132b57;display:grid;place-items:center;font-weight:800;color:#dff3ff;font-size:36px}
@@ -989,13 +1008,29 @@
         const y=clamp(desiredY, sy+12, maxY);
         el.style.left=x+'px'; el.style.top=y+'px';
       }
-      function open(p,anchorEl){
-        currentPlayer=p; nameEl.textContent=p.name; photoEl.innerHTML='';
-        if(p.photo){ const img=document.createElement('img'); img.src=p.photo; img.alt=p.name; img.draggable=false; photoEl.appendChild(img); }
-        else { photoEl.textContent=initials(p.name); }
-        colorEl.value=(p.color && /^#([0-9a-f]{3}){1,2}$/i.test(p.color)) ? p.color : '#6ee7b7';
-        el.classList.add('show'); requestAnimationFrame(()=>positionNear(anchorEl));
-      }
+     function positionNear(anchor){
+  const rect = anchor.getBoundingClientRect();   // viewport rect (no scroll)
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+
+  const desiredX = rect.right + 12;              // to the right of the card
+  const desiredY = rect.top - 8;                 // slightly up
+
+  const panelW = el.offsetWidth  || 600;
+  const panelH = el.offsetHeight || 220;
+
+  const maxX = vw - panelW - 12;
+  const maxY = vh - panelH - 12;
+
+  // if it doesn't fit on the right, flip to the left
+  let x = desiredX > maxX ? rect.left - panelW - 12 : desiredX;
+  x = Math.max(12, Math.min(x, maxX));
+  const y = Math.max(12, Math.min(desiredY, maxY));
+
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+}
+
       function close(){ el.classList.remove('show'); currentPlayer=null; }
       colorEl.addEventListener('input',()=>{ if(!currentPlayer) return; currentPlayer.color=colorEl.value; saveState(); drawWheel(); updateMatchupUI(); renderRoster(); });
       closeEl.addEventListener('click',close);
