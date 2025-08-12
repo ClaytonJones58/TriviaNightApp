@@ -527,8 +527,17 @@
         teamA=[]; teamB=[]; nextTeam='A';
         teamANameVal='Team A'; teamBNameVal='Team B'; savedFormat='2v2';
       }
-      const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
-      PEOPLE = PEOPLE.map(p => ({ ...defaultsById[p.id], ...p }));
+   const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
+
+// Merge saved people with defaults, but ALWAYS keep the default photo
+// for built-in players so .png/.jpg changes take effect.
+PEOPLE = PEOPLE.map(p => {
+  const d = defaultsById[p.id] || {};
+  const merged = { ...d, ...p };
+  if (DEFAULT_IDS.has(p.id)) merged.photo = d.photo; // force default photo path
+  return merged;
+});
+
     }
     restoreState();
 
@@ -558,6 +567,8 @@
     /* ---- Canvas ---- */
     const canvas = $('#wheelCanvas');
     const ctx = canvas.getContext('2d');
+    const _imgCache = new Map();
+
 
     let _resizeQueued = false;
     function sizeWheel(){
@@ -579,17 +590,53 @@
     window.addEventListener('resize', safeSizeWheel);
     window.addEventListener('orientationchange', safeSizeWheel);
     rotor.addEventListener('transitionend', (e)=>{ if (e.propertyName!=='transform') return; if (_resizeQueued){ _resizeQueued=false; sizeWheel(); } });
+// after:  const ctx = canvas.getContext('2d');
 
-    const _imgCache = new Map();
-    function loadImage(src){
-      return new Promise((res, rej) => {
-        if (_imgCache.has(src)) return res(_imgCache.get(src));
-        const im = new Image();
-        im.onload = ()=>{ _imgCache.set(src, im); res(im); };
-        im.onerror = (e)=>{ console.error('❌ Failed to load image:', src, e); rej(e); };
-        im.src = src;
-      });
+function loadImage(src){
+  return new Promise((res) => {
+    if (_imgCache.has(src)) return res(_imgCache.get(src));
+
+    const tryList = [];
+    if (src) {
+      const clean = String(src).replace(/^\.\//,'');
+      tryList.push(clean);
+      if (clean.endsWith('.jpg')) tryList.push(clean.replace(/\.jpg$/i, '.png'));
+      if (clean.endsWith('.png')) tryList.push(clean.replace(/\.png$/i, '.jpg'));
+      tryList.push('./' + clean);
+      tryList.push('/' + clean);
     }
+
+    // tiny fallback so canvas draw never crashes
+    const fallback = (() => {
+      const ph = document.createElement('canvas');
+      ph.width = ph.height = 64;
+      const pc = ph.getContext('2d');
+      pc.fillStyle = '#0e1f42';
+      pc.fillRect(0,0,64,64);
+      return ph;
+    })();
+
+    const tryNext = () => {
+      const url = tryList.shift();
+      if (!url) { _imgCache.set(src, fallback); return res(fallback); }
+
+      const img = new Image();
+
+      // IMPORTANT: only set crossOrigin on http(s). Never on file://
+      if (/^https?:/i.test(url) && /^https?:/i.test(location.protocol)) {
+        img.crossOrigin = 'anonymous';
+      }
+
+      img.onload  = () => { _imgCache.set(src, img); res(img); };
+      img.onerror = tryNext;
+      img.src = url;
+    };
+
+    tryNext();
+  });
+}
+
+
     function drawImageCover(ctx, img, cx, cy, diam){
       const w = img.width, h = img.height;
       const scale = Math.max(diam / w, diam / h);
