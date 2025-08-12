@@ -241,6 +241,18 @@
         row-gap: 10px;
       }
       .badge{ margin-bottom:10px; }
+      /* --- Mobile-only: prevent team badge overlapping the name input --- */
+@media (max-width: 600px){
+  /* a touch more vertical space between the photo and the input */
+  .teams{ row-gap:14px; align-items:start; }
+
+  /* push the name field down and ensure taps go through the badge */
+  .badge{ margin-bottom:18px; pointer-events:none; }
+
+  /* small top margin for the field itself for extra breathing room */
+  .team-name{ margin-top:12px; }
+}
+
 
       /* Player Panel as mobile modal (above everything) */
       .player-panel{
