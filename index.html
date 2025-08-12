@@ -76,12 +76,11 @@
 
     /* --- Wheel --- */
     .wheel-wrap{display:grid;gap:12px;grid-template-rows:auto 1fr auto}
-   .wheel-area{position:relative;display:grid;place-items:center;height:auto} /* JS sets height */
-.rotor{
-  position:relative; width:min(100%,420px); aspect-ratio:1/1; height:auto; margin:6px auto 0;
-  transform-origin:center; will-change:transform;
-}
-
+    .wheel-area{position:relative;display:grid;place-items:center;height:auto} /* JS sets height */
+    .rotor{
+      position:relative; width:min(100%,420px); aspect-ratio:1/1; height:auto; margin:6px auto 0;
+      transform-origin:center; will-change:transform;
+    }
     #wheelCanvas{ width:100%; height:100%; }
     .wheel{position:absolute;inset:0;border-radius:50%;box-shadow:0 12px 40px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.06)}
     .labels{position:absolute;inset:0}
@@ -98,11 +97,10 @@
       background:#10254a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
     }
     .person .btn.toggle{
-  margin-left:auto;
-  min-width:110px;     /* keeps "On Wheel" and "Off" same width */
-  white-space:nowrap;  /* prevents wrapping */
-}
-
+      margin-left:auto;
+      min-width:110px;
+      white-space:nowrap;
+    }
     .avatar{
       width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
       font-size:13px;font-weight:700;color:#001; overflow:hidden;
@@ -150,14 +148,12 @@
     }
     .track-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .track-title{font-weight:700}
-
     .tr-remove{
       border:0;background:#0a1e3c;color:#9ccfff;width:26px;height:26px;border-radius:8px;
       display:grid;place-items:center;font-weight:800;cursor:pointer;
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)
     }
     .tr-remove:hover{background:#102852}
-
     .pick-row{display:flex!important;flex-direction:row;gap:10px;margin-top:10px;flex-wrap:nowrap}
     .pick{
       flex:1 1 0;min-width:0;max-width:none;padding:10px 14px;border-radius:10px;background:#132b57;
@@ -192,15 +188,12 @@
     .pp-label{font-size:13px;opacity:.85}
     #ppColor{width:64px;height:46px;border:0;border-radius:10px;padding:0;background:#132b57;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 
-    /* Fix team name / chips overlap */
+    /* Fix team name / chips overlap (desktop-safe base) */
     .teamA,.teamB{display:flex;flex-direction:column;align-items:center}
-  .badge{ margin-bottom:26px; position:relative; z-index:0; }
-
     .team-name{width:100%;max-width:260px;margin-top:10px;display:flex;flex-direction:column;gap:6px}
     .team-name label{line-height:1}
     .team-name input{width:100%;max-width:260px}
     .team-members{margin-top:10px;max-width:260px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-
     .team-members{flex-wrap:nowrap!important;overflow-x:auto;gap:6px;justify-content:center}
     .team-members::-webkit-scrollbar{height:6px}
     .team-members::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:3px}
@@ -210,135 +203,112 @@
     .team-name input{font-size:16px;line-height:1.2}
     .team-name input:focus{scroll-margin-top:72px}
 
-    /* ===== Mobile tweaks ===== */
-/* --- Coin Flip: button + overlay --- */
-.coin-btn{
-  position:fixed; top:var(--safe-top); right:12px; z-index:10000;
-  padding:10px 14px; border:0; border-radius:12px; cursor:pointer;
-  background:linear-gradient(135deg,#ffd166,#ff8a5b); color:#001; font-weight:800;
-  box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
-}
+    /* --- Coin Flip: button + overlay (desktop+mobile) --- */
+    .coin-btn{
+      position:fixed; top:var(--safe-top); right:12px; z-index:10000;
+      padding:10px 14px; border:0; border-radius:12px; cursor:pointer;
+      background:linear-gradient(135deg,#ffd166,#ff8a5b); color:#001; font-weight:800;
+      box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+    }
+    #coinOverlay{
+      position:fixed; inset:0; z-index:30000; display:none;
+      background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
+    }
+    #coinOverlay.show{ display:grid; place-items:center; }
+    .coin-modal{
+      width:min(420px,92vw); background:#0a1326; border-radius:14px;
+      box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
+      position:relative; overflow:hidden; padding:16px;
+    }
+    .coin-close{
+      position:absolute; top:8px; right:8px; z-index:2;
+      border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
+      background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .coin-close:hover{ background:#102852; }
+    .coin-wrap{ display:grid; gap:16px; place-items:center; padding:8px; }
+    .coin-result{ font-weight:800; font-size:18px; color:#dff3ff; }
+    .coin-actions{ display:flex; gap:10px; }
+    .coin{
+      width:180px; height:180px; position:relative;
+      transform-style:preserve-3d; will-change:transform;
+      transition: transform 900ms cubic-bezier(.2,1,.2,1);
+    }
+    .face{
+      position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
+      backface-visibility:hidden;
+      box-shadow: inset 0 0 0 6px rgba(255,255,255,.85), 0 14px 28px rgba(0,0,0,.35);
+      background-size: cover; background-position: center;
+    }
+    .face.front{ background-image: url('assets/coin_heads.png'); }
+    .face.back{  background-image: url('assets/coin_tails.png'); transform: rotateY(180deg); }
+    .coin::before{
+      content:''; position:absolute; inset:0; border-radius:50%;
+      background: linear-gradient(to right, #bbb, #eee, #bbb);
+      transform: translateZ(-1px);
+    }
+    .coin.spinning{ animation: coinspin 900ms cubic-bezier(.2,1,.2,1) infinite; }
+    @keyframes coinspin{ from{ transform:rotateY(0deg);} to{ transform:rotateY(720deg);} }
 
-/* Overlay */
-#coinOverlay{
-  position:fixed; inset:0; z-index:30000; display:none;
-  background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
-}
-#coinOverlay.show{ display:grid; place-items:center; }
-
-.coin-modal{
-  width:min(420px,92vw); background:#0a1326; border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
-  position:relative; overflow:hidden; padding:16px;
-}
-.coin-close{
-  position:absolute; top:8px; right:8px; z-index:2;
-  border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
-  background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
-}
-.coin-close:hover{ background:#102852; }
-
-.coin-wrap{ display:grid; gap:16px; place-items:center; padding:8px; }
-.coin-result{ font-weight:800; font-size:18px; color:#dff3ff; }
-.coin-actions{ display:flex; gap:10px; }
-
-/* The coin */
-.coin{
-  width:180px; height:180px; position:relative;
-  transform-style:preserve-3d; will-change:transform;
-  transition: transform 900ms cubic-bezier(.2,1,.2,1);
-}
-.face{
-  position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
-  backface-visibility:hidden; font-weight:900; letter-spacing:.6px;
-  box-shadow: inset 0 0 0 6px rgba(255,255,255,.85), 0 14px 28px rgba(0,0,0,.35);
-}
-.face.front{
-  background-image: url('assets/coin_heads.png');
-  background-size: cover;
-  background-position: center;
-}
-
-.face.back{
-  background-image: url('assets/coin_tails.png');
-  background-size: cover;
-  background-position: center;
-  transform: rotateY(180deg);
-}
-
-.coin::before{
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: linear-gradient(to right, #bbb, #eee, #bbb);
-  transform: translateZ(-1px);
-}
-
-/* Spinning state */
-.coin.spinning{
-  animation: coinspin 900ms cubic-bezier(.2,1,.2,1) infinite;
-}
-@keyframes coinspin{
-  from{ transform:rotateY(0deg); }
-  to{   transform:rotateY(720deg); }
-}
-
-/* Mobile nits */
-@media (max-width:600px){
-  .coin-btn{ top:12px; right:12px; }
-}
-
-
+    /* ===== Tablet stack ===== */
     @media (max-width: 960px){
       .grid{ grid-template-columns: 1fr; gap:14px; }
       header{ flex-wrap:wrap; gap:8px; }
     }
+
+    /* ===== Narrow tablets / small laptops ===== */
     @media (max-width: 900px){
       .app{padding:0 12px}
       .grid{grid-template-columns:1fr; gap:12px}
       header .row{width:100%; overflow-x:auto; gap:8px; padding-bottom:6px}
       header .btn{flex:0 0 auto}
-
       .badge{width:120px; height:120px}
       .sunny-modal{width:92vw; aspect-ratio:9/16}
     }
+
+    /* ===== Mobile (<=600px) — CLEANED & FIXED ===== */
     @media (max-width: 600px){
       .app{ padding: 0 14px 84px; }
-      .siren-btn{ top:auto; left:50%; bottom:12px; transform:translateX(-50%); padding:8px 12px; border-radius:12px; font-weight:800; font-size:14px; }
+      .siren-btn{
+        top:auto; left:50%; bottom:12px; transform:translateX(-50%);
+        padding:8px 12px; border-radius:12px; font-weight:800; font-size:14px;
+      }
       .card{ padding:14px; border-radius:14px; }
       .btn{ padding:8px 12px; }
-      .wheel-area{ height:auto;}
+      .wheel-area{ height:auto; }
       .rotor{ width:260px; height:260px; }
-      .badge{ width:120px; height:120px; }
+
+      /* >>> Fix: badges overlapping inputs */
+      .teams{
+        grid-template-columns: 1fr 32px 1fr;
+        align-items:start;
+        row-gap:16px;
+      }
+      .badge{
+        width:120px; height:120px;
+        margin-bottom:26px;          /* extra gap so it never touches input */
+        pointer-events:none;         /* taps go through to the input */
+      }
+      .team-name{ position:relative; z-index:1; } /* input paints above badge */
       .team-name input{ width:100%; }
       .team-members{ gap:8px; justify-content:flex-start; }
       .chip{ font-size:12px; padding:6px 8px; }
 
-      .teams{
-        grid-template-columns: 1fr 32px 1fr;
-        align-items: start;
-        row-gap: 10px;
-      }
-      .badge{ margin-bottom:10px; }
-      /* --- Mobile-only: prevent team badge overlapping the name input --- */
-@media (max-width: 600px){
-  .teams{ row-gap:16px; align-items:start; }  /* a little more vertical space */
-  .team-name{ position:relative; z-index:1; } /* ensure it paints above the badge */
-  .badge{ pointer-events:none; }              /* taps go through to the input */
-}
+      /* Coin button position tweak */
+      .coin-btn{ top:12px; right:12px; }
 
-
-
-      /* Player Panel as mobile modal (above everything) */
+      /* Player Panel as mobile modal */
       .player-panel{
-        position:fixed; inset:auto 12px 12px 12px; width:auto; max-width:none; max-height:70vh; overflow:auto;
+        position:fixed; inset:auto 12px 12px 12px; width:auto; max-width:none;
+        max-height:70vh; overflow:auto;
       }
 
       /* Right column tracker scroll */
       aside.card{ display:grid; grid-template-rows:auto auto 1fr; min-height:0; }
       #tracker{ max-height:42vh; overflow:auto; -webkit-overflow-scrolling:touch; padding-right:4px; min-height:0; }
     }
+
+    /* ===== Very small phones ===== */
     @media (max-width: 480px){
       h1{font-size:20px}
       .btn{padding:10px 12px; border-radius:10px}
@@ -362,32 +332,33 @@
     🚨 Emergency — Wake Merlo!
   </button>
 
+  <!-- Sunny overlay -->
   <div id="sunnyOverlay" aria-hidden="true">
     <div class="sunny-modal" role="dialog" aria-label="Always Sunny Clip">
       <button class="sunny-close" id="sunnyClose" aria-label="Close video">×</button>
       <div id="sunnyPlayer" style="width:100%;height:100%"></div>
     </div>
   </div>
+
   <!-- Coin Flip button -->
-<button id="coinBtn" class="coin-btn" title="Flip a coin" aria-label="Flip a coin">🪙 Coin</button>
+  <button id="coinBtn" class="coin-btn" title="Flip a coin" aria-label="Flip a coin">🪙 Coin</button>
 
-<!-- Coin Flip overlay -->
-<div id="coinOverlay" aria-hidden="true">
-  <div class="coin-modal" role="dialog" aria-label="Coin Flip">
-    <button class="coin-close" id="coinClose" aria-label="Close">×</button>
-
-    <div class="coin-wrap">
-      <div class="coin" id="coin">
-        <div class="face front">HEADS</div>
-        <div class="face back">TAILS</div>
-      </div>
-      <div id="coinResult" class="coin-result">Tap Flip</div>
-      <div class="coin-actions">
-        <button id="coinFlipBtn" class="btn success">Flip</button>
+  <!-- Coin Flip overlay -->
+  <div id="coinOverlay" aria-hidden="true">
+    <div class="coin-modal" role="dialog" aria-label="Coin Flip">
+      <button class="coin-close" id="coinClose" aria-label="Close">×</button>
+      <div class="coin-wrap">
+        <div class="coin" id="coin">
+          <div class="face front"></div>
+          <div class="face back"></div>
+        </div>
+        <div id="coinResult" class="coin-result">Tap Flip</div>
+        <div class="coin-actions">
+          <button id="coinFlipBtn" class="btn success">Flip</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <div class="app">
     <header>
@@ -565,41 +536,40 @@
     })();
 
     /* ---------- Coin Flip popup ---------- */
-(function initCoinFlip(){
-  const btn = document.getElementById('coinBtn');
-  const overlay = document.getElementById('coinOverlay');
-  const closeBtn = document.getElementById('coinClose');
-  const flipBtn = document.getElementById('coinFlipBtn');
-  const coin = document.getElementById('coin');
-  const resultEl = document.getElementById('coinResult');
+    (function initCoinFlip(){
+      const btn = document.getElementById('coinBtn');
+      const overlay = document.getElementById('coinOverlay');
+      const closeBtn = document.getElementById('coinClose');
+      const flipBtn = document.getElementById('coinFlipBtn');
+      const coin = document.getElementById('coin');
+      const resultEl = document.getElementById('coinResult');
 
-  function open(){ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
-  function close(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; stopSpin(); }
+      function open(){ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
+      function close(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; stopSpin(); }
 
-  function stopSpin(){
-    coin.classList.remove('spinning');
-    coin.style.transform = '';
-  }
+      function stopSpin(){
+        coin.classList.remove('spinning');
+        coin.style.transform = '';
+      }
 
-  function flip(){
-    resultEl.textContent = 'Flipping…';
-    coin.classList.add('spinning');
-    const DURATION = 1000;
-    setTimeout(()=>{
-      coin.classList.remove('spinning');
-      const heads = Math.random() < 0.5;
-      coin.style.transform = heads ? 'rotateY(0deg)' : 'rotateY(180deg)';
-      resultEl.textContent = heads ? 'Heads' : 'Tails';
-    }, DURATION);
-  }
+      function flip(){
+        resultEl.textContent = 'Flipping…';
+        coin.classList.add('spinning');
+        const DURATION = 1000;
+        setTimeout(()=>{
+          coin.classList.remove('spinning');
+          const heads = Math.random() < 0.5;
+          coin.style.transform = heads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+          resultEl.textContent = heads ? 'Heads' : 'Tails';
+        }, DURATION);
+      }
 
-  btn.addEventListener('click', ()=>{ open(); flip(); });
-  flipBtn.addEventListener('click', flip);
-  closeBtn.addEventListener('click', close);
-  overlay.addEventListener('click', (e)=>{ if (e.target===overlay) close(); });
-  document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay.classList.contains('show')) close(); });
-})();
-
+      btn.addEventListener('click', ()=>{ open(); flip(); });
+      flipBtn.addEventListener('click', flip);
+      closeBtn.addEventListener('click', close);
+      overlay.addEventListener('click', (e)=>{ if (e.target===overlay) close(); });
+      document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay.classList.contains('show')) close(); });
+    })();
 
     /* ---------- Data ---------- */
     const DEFAULT_PEOPLE = [
@@ -672,17 +642,14 @@
         teamA=[]; teamB=[]; nextTeam='A';
         teamANameVal='Team A'; teamBNameVal='Team B'; savedFormat='2v2';
       }
-   const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
-
-// Merge saved people with defaults, but ALWAYS keep the default photo
-// for built-in players so .png/.jpg changes take effect.
-PEOPLE = PEOPLE.map(p => {
-  const d = defaultsById[p.id] || {};
-  const merged = { ...d, ...p };
-  if (DEFAULT_IDS.has(p.id)) merged.photo = d.photo; // force default photo path
-  return merged;
-});
-
+      const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
+      // Merge saved people with defaults, but ALWAYS keep the default photo for built-ins
+      PEOPLE = PEOPLE.map(p => {
+        const d = defaultsById[p.id] || {};
+        const merged = { ...d, ...p };
+        if (DEFAULT_IDS.has(p.id)) merged.photo = d.photo; // force default photo path
+        return merged;
+      });
     }
     restoreState();
 
@@ -714,7 +681,6 @@ PEOPLE = PEOPLE.map(p => {
     const ctx = canvas.getContext('2d');
     const _imgCache = new Map();
 
-
     let _resizeQueued = false;
     function sizeWheel(){
       if (window._spinning) return;
@@ -735,52 +701,41 @@ PEOPLE = PEOPLE.map(p => {
     window.addEventListener('resize', safeSizeWheel);
     window.addEventListener('orientationchange', safeSizeWheel);
     rotor.addEventListener('transitionend', (e)=>{ if (e.propertyName!=='transform') return; if (_resizeQueued){ _resizeQueued=false; sizeWheel(); } });
-// after:  const ctx = canvas.getContext('2d');
 
-function loadImage(src){
-  return new Promise((res) => {
-    if (_imgCache.has(src)) return res(_imgCache.get(src));
-
-    const tryList = [];
-    if (src) {
-      const clean = String(src).replace(/^\.\//,'');
-      tryList.push(clean);
-      if (clean.endsWith('.jpg')) tryList.push(clean.replace(/\.jpg$/i, '.png'));
-      if (clean.endsWith('.png')) tryList.push(clean.replace(/\.png$/i, '.jpg'));
-      tryList.push('./' + clean);
-      tryList.push('/' + clean);
+    function loadImage(src){
+      return new Promise((res) => {
+        if (_imgCache.has(src)) return res(_imgCache.get(src));
+        const tryList = [];
+        if (src) {
+          const clean = String(src).replace(/^\.\//,'');
+          tryList.push(clean);
+          if (clean.endsWith('.jpg')) tryList.push(clean.replace(/\.jpg$/i, '.png'));
+          if (clean.endsWith('.png')) tryList.push(clean.replace(/\.png$/i, '.jpg'));
+          tryList.push('./' + clean);
+          tryList.push('/' + clean);
+        }
+        const fallback = (() => {
+          const ph = document.createElement('canvas');
+          ph.width = ph.height = 64;
+          const pc = ph.getContext('2d');
+          pc.fillStyle = '#0e1f42';
+          pc.fillRect(0,0,64,64);
+          return ph;
+        })();
+        const tryNext = () => {
+          const url = tryList.shift();
+          if (!url) { _imgCache.set(src, fallback); return res(fallback); }
+          const img = new Image();
+          if (/^https?:/i.test(url) && /^https?:/i.test(location.protocol)) {
+            img.crossOrigin = 'anonymous';
+          }
+          img.onload  = () => { _imgCache.set(src, img); res(img); };
+          img.onerror = tryNext;
+          img.src = url;
+        };
+        tryNext();
+      });
     }
-
-    // tiny fallback so canvas draw never crashes
-    const fallback = (() => {
-      const ph = document.createElement('canvas');
-      ph.width = ph.height = 64;
-      const pc = ph.getContext('2d');
-      pc.fillStyle = '#0e1f42';
-      pc.fillRect(0,0,64,64);
-      return ph;
-    })();
-
-    const tryNext = () => {
-      const url = tryList.shift();
-      if (!url) { _imgCache.set(src, fallback); return res(fallback); }
-
-      const img = new Image();
-
-      // IMPORTANT: only set crossOrigin on http(s). Never on file://
-      if (/^https?:/i.test(url) && /^https?:/i.test(location.protocol)) {
-        img.crossOrigin = 'anonymous';
-      }
-
-      img.onload  = () => { _imgCache.set(src, img); res(img); };
-      img.onerror = tryNext;
-      img.src = url;
-    };
-
-    tryNext();
-  });
-}
-
 
     function drawImageCover(ctx, img, cx, cy, diam){
       const w = img.width, h = img.height;
@@ -1350,13 +1305,13 @@ function loadImage(src){
         colorEl.value = (p.color && /^#([0-9a-f]{3}){1,2}$/i.test(p.color)) ? p.color : '#6ee7b7';
 
         el.classList.add('show');
-        lockBodyScroll();        // lock body scroll while open
+        lockBodyScroll();
         requestAnimationFrame(()=> positionNear(anchorEl));
       }
 
       function close(){
         el.classList.remove('show');
-        unlockBodyScroll();      // restore scroll
+        unlockBodyScroll();
         currentPlayer = null;
       }
 
