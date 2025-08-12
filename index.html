@@ -210,6 +210,85 @@
     .team-name input:focus{scroll-margin-top:72px}
 
     /* ===== Mobile tweaks ===== */
+/* --- Coin Flip: button + overlay --- */
+.coin-btn{
+  position:fixed; top:var(--safe-top); right:12px; z-index:10000;
+  padding:10px 14px; border:0; border-radius:12px; cursor:pointer;
+  background:linear-gradient(135deg,#ffd166,#ff8a5b); color:#001; font-weight:800;
+  box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+}
+
+/* Overlay */
+#coinOverlay{
+  position:fixed; inset:0; z-index:30000; display:none;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
+}
+#coinOverlay.show{ display:grid; place-items:center; }
+
+.coin-modal{
+  width:min(420px,92vw); background:#0a1326; border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
+  position:relative; overflow:hidden; padding:16px;
+}
+.coin-close{
+  position:absolute; top:8px; right:8px; z-index:2;
+  border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
+  background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.coin-close:hover{ background:#102852; }
+
+.coin-wrap{ display:grid; gap:16px; place-items:center; padding:8px; }
+.coin-result{ font-weight:800; font-size:18px; color:#dff3ff; }
+.coin-actions{ display:flex; gap:10px; }
+
+/* The coin */
+.coin{
+  width:180px; height:180px; position:relative;
+  transform-style:preserve-3d; will-change:transform;
+  transition: transform 900ms cubic-bezier(.2,1,.2,1);
+}
+.face{
+  position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
+  backface-visibility:hidden; font-weight:900; letter-spacing:.6px;
+  box-shadow: inset 0 0 0 6px rgba(255,255,255,.85), 0 14px 28px rgba(0,0,0,.35);
+}
+.face.front{
+  background-image: url('assets/coin_heads.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.face.back{
+  background-image: url('assets/coin_tails.png');
+  background-size: cover;
+  background-position: center;
+  transform: rotateY(180deg);
+}
+
+.coin::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(to right, #bbb, #eee, #bbb);
+  transform: translateZ(-1px);
+}
+
+/* Spinning state */
+.coin.spinning{
+  animation: coinspin 900ms cubic-bezier(.2,1,.2,1) infinite;
+}
+@keyframes coinspin{
+  from{ transform:rotateY(0deg); }
+  to{   transform:rotateY(720deg); }
+}
+
+/* Mobile nits */
+@media (max-width:600px){
+  .coin-btn{ top:12px; right:12px; }
+}
+
+
     @media (max-width: 960px){
       .grid{ grid-template-columns: 1fr; gap:14px; }
       header{ flex-wrap:wrap; gap:8px; }
@@ -292,6 +371,26 @@
       <div id="sunnyPlayer" style="width:100%;height:100%"></div>
     </div>
   </div>
+  <!-- Coin Flip button -->
+<button id="coinBtn" class="coin-btn" title="Flip a coin" aria-label="Flip a coin">🪙 Coin</button>
+
+<!-- Coin Flip overlay -->
+<div id="coinOverlay" aria-hidden="true">
+  <div class="coin-modal" role="dialog" aria-label="Coin Flip">
+    <button class="coin-close" id="coinClose" aria-label="Close">×</button>
+
+    <div class="coin-wrap">
+      <div class="coin" id="coin">
+        <div class="face front">HEADS</div>
+        <div class="face back">TAILS</div>
+      </div>
+      <div id="coinResult" class="coin-result">Tap Flip</div>
+      <div class="coin-actions">
+        <button id="coinFlipBtn" class="btn success">Flip</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="app">
     <header>
@@ -467,6 +566,43 @@
       overlay.addEventListener('click', (e)=>{ if (e.target===overlay) closeOverlay(); });
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay.classList.contains('show')) closeOverlay(); });
     })();
+
+    /* ---------- Coin Flip popup ---------- */
+(function initCoinFlip(){
+  const btn = document.getElementById('coinBtn');
+  const overlay = document.getElementById('coinOverlay');
+  const closeBtn = document.getElementById('coinClose');
+  const flipBtn = document.getElementById('coinFlipBtn');
+  const coin = document.getElementById('coin');
+  const resultEl = document.getElementById('coinResult');
+
+  function open(){ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
+  function close(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; stopSpin(); }
+
+  function stopSpin(){
+    coin.classList.remove('spinning');
+    coin.style.transform = '';
+  }
+
+  function flip(){
+    resultEl.textContent = 'Flipping…';
+    coin.classList.add('spinning');
+    const DURATION = 1000;
+    setTimeout(()=>{
+      coin.classList.remove('spinning');
+      const heads = Math.random() < 0.5;
+      coin.style.transform = heads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+      resultEl.textContent = heads ? 'Heads' : 'Tails';
+    }, DURATION);
+  }
+
+  btn.addEventListener('click', ()=>{ open(); flip(); });
+  flipBtn.addEventListener('click', flip);
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (e)=>{ if (e.target===overlay) close(); });
+  document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay.classList.contains('show')) close(); });
+})();
+
 
     /* ---------- Data ---------- */
     const DEFAULT_PEOPLE = [
