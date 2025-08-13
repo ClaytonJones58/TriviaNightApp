@@ -241,7 +241,7 @@
       background-size: cover; background-position: center;
     }
     .face.front{ background-image: url('assets/coin_heads.png'); }
-    .face.back{  background-image: url('assets/coin_tails.png'); transform: rotateY(180deg); }
+    .face.back{  background-image: url('assets/coin_tails2.png'); transform: rotateY(180deg); }
     .coin::before{
       content:''; position:absolute; inset:0; border-radius:50%;
       background: linear-gradient(to right, #bbb, #eee, #bbb);
@@ -444,17 +444,23 @@
         </div>
       </section>
 
-      <!-- RIGHT -->
-      <aside class="card">
-        <h3 class="section-title">Scoreboard</h3>
-        <div id="score" class="score"></div>
+<!-- RIGHT -->
+<aside class="card">
+  <h3 class="section-title">Scoreboard</h3>
+  <div id="score" class="score"></div>
 
-        <div class="divider" style="margin:14px 0"></div>
-        <h3 class="section-title">Game Tracker</h3>
-        <div id="tracker" class="games" style="gap:10px"></div>
-      </aside>
-    </div>
-  </div>
+  <div class="divider" style="margin:14px 0"></div>
+  <h3 class="section-title">Game Tracker</h3>
+  <div id="tracker" class="games" style="gap:10px"></div>
+
+  <!-- ADD THIS -->
+  <div class="divider" style="margin:14px 0"></div>
+  <a href="jeopardy.html" class="btn" style="display:block;text-align:center;width:100%;">
+    Jeopardy Scoreboard
+  </a>
+</aside>
+
+
 
   <script src="https://www.youtube.com/iframe_api"></script>
 
