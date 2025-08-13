@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#0c1730" />
   <style>
     :root{
-      --bg:#0c1730; --panel:#0f2347; --text:#dff3ff; --accent:#5ee1ff;
-      --gold:#ffc84a; --mut:#7f8db2; --safe-top:max(12px, env(safe-area-inset-top));
+      --bg:#0c1730;--panel:#0f2347;--text:#dff3ff;--accent:#5ee1ff;--gold:#ffc84a;--mut:#7f8db2;
+      --safe-top:max(12px, env(safe-area-inset-top));
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -20,7 +20,7 @@
     }
 
     .app{max-width:1280px;margin:24px auto;padding:0 16px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
     h1{margin:0;font-size:22px}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .btn{
@@ -30,44 +30,39 @@
     }
     .btn.secondary{background:#15294a}
     .btn.success{background:linear-gradient(135deg,#13c7a3,#47f3c9)}
-    .btn.small{padding:7px 10px;border-radius:10px;font-weight:800}
 
-    .card{
-      background:#0f2347;border-radius:18px;padding:16px;
-      box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 360px;  /* tighter right column */
-      gap:16px; align-items:start
-    }
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start}
+    .card{background:#0f2347;border-radius:18px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.06)}
     .section-title{margin:0 0 10px;font-weight:800;opacity:.9}
     .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:12px 0}
 
     /* --- Board --- */
-    .board{
-      display:grid;
-      grid-template-columns:repeat(6,1fr);
-      gap:14px
-    }
+    #board{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
     .cell{
-      display:grid;place-items:center;aspect-ratio:1/1;border-radius:14px;
+      display:grid;place-items:center;height:86px;border-radius:14px;
       background:#15294a; box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
-      font-weight:900; font-size:clamp(18px,2.2vw,28px); letter-spacing:.5px;
-      color:var(--gold); cursor:pointer; user-select:none; min-width:0
+      font-weight:900; font-size:28px; letter-spacing:.5px; color:var(--gold); cursor:pointer; user-select:none;
     }
     .cell.used{background:#0f213f;color:var(--mut);position:relative}
     .cell.used::after{content:"✓";position:absolute;right:10px;bottom:10px;opacity:.35;font-size:16px}
 
-    /* --- Teams panel --- */
-    .teams{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;gap:10px}
+    /* --- Right Panel / Teams --- */
+    /* allow badge rim to overflow safely */
+    aside.card{overflow:visible}
+    .teams{display:grid;grid-template-columns:1fr 40px 1fr;align-items:start;gap:10px}
+
+    /* Badge container: padding so outer rim isn’t clipped */
     .badge{
-      width:140px;height:140px;border-radius:50%;background:#0f213f;margin:auto;display:block;position:relative;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
+      width:150px;height:150px;padding:6px;
+      border-radius:50%;display:grid;place-items:center;background:transparent;overflow:visible;
     }
+    .badge canvas{width:100%;height:100%;display:block}
     .badge.drop-target{outline:2px solid var(--accent);box-shadow:0 0 0 6px rgba(94,225,255,.15), inset 0 0 0 1px rgba(255,255,255,.06)}
-    .team-name{display:flex;gap:8px;align-items:center;margin-top:8px;justify-content:center}
-    .team-name input{width:220px;max-width:100%;background:#132b57;border:0;border-radius:10px;padding:8px 10px;color:var(--text)}
+
+    .team-name{display:flex;align-items:center;justify-content:center;margin-top:8px}
+    .team-name input{
+      width:clamp(120px,80%,200px);max-width:200px;background:#132b57;border:0;border-radius:10px;padding:8px 10px;color:var(--text)
+    }
     .team-members{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px}
     .chip{padding:6px 8px;background:#132b57;border-radius:999px;font-size:13px;display:flex;align-items:center;gap:6px}
     .chip button{border:0;background:#0a1e3c;color:#9ccfff;border-radius:6px;padding:0 6px;cursor:pointer}
@@ -75,17 +70,40 @@
     .score{display:grid;gap:8px;margin-top:10px}
     .score-row{display:flex;justify-content:space-between;align-items:center;background:#10254a;padding:8px 10px;border-radius:10px}
 
-    /* Manual adjust */
-    .man{display:flex;gap:8px;align-items:center;justify-content:space-between}
-    .man .row{gap:6px}
-    .num{width:90px;background:#132b57;border-radius:10px;border:0;padding:8px 10px;color:var(--text);font-weight:800}
+    /* Roster (Jeopardy page only) */
+    #jpRoster{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+      gap:10px;margin-top:10px;
+    }
+    .jp-pcard{
+      background:#10254a;border-radius:14px;padding:10px 8px;text-align:center;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);user-select:none;cursor:grab;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .jp-pcard:active{cursor:grabbing}
+    .jp-pcard:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.10)}
+    .jp-pcard .avatar{
+      width:64px;height:64px;margin:0 auto 8px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+      background:#132b57;color:#001;font-weight:800;box-shadow:0 0 0 3px rgba(255,255,255,.06)
+    }
+    .jp-pcard .avatar img{width:100%;height:100%;object-fit:cover}
+    .jp-pcard .name{font-size:13px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 auto;max-width:96px}
 
-    /* --- Roster (NO “On Wheel”) --- */
-    .roster{display:grid;gap:8px}
-    .person{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;background:#10254a;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-    .avatar{width:28px;height:28px;border-radius:50%;overflow:hidden;display:grid;place-items:center;font-size:13px;font-weight:800;color:#001}
+    /* Manual Adjust – one row per team */
+    .jp-manual{display:grid;gap:8px;margin-top:8px}
+    .man-row{display:flex;align-items:center;gap:8px;justify-content:flex-start}
+    .man-label{min-width:56px;opacity:.9}
+    .num{width:84px;background:#132b57;border-radius:10px;border:0;padding:8px 10px;color:var(--text);font-weight:800}
 
-    /* --- Sunny popup --- */
+    /* Music toggles */
+    .music-row{display:flex;gap:8px}
+    .music-btn{
+      border:0;border-radius:10px;padding:6px 10px;font-weight:800;
+      background:#0a1e3c;color:#9ccfff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)
+    }
+    .music-btn.playing{outline:2px solid var(--accent);box-shadow:0 0 0 4px rgba(94,225,255,.15), inset 0 0 0 1px rgba(255,255,255,.12)}
+
+    /* Sunny */
     .siren-btn{
       position:fixed; top:12px; left:12px; z-index:10000;
       display:flex; align-items:center; gap:10px;
@@ -96,21 +114,28 @@
     }
     .siren-btn .dot{width:10px;height:10px;border-radius:999px;background:#001;opacity:.9;box-shadow:0 0 0 3px rgba(0,0,0,.15);animation:pulse 1.2s infinite ease-in-out}
     @keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.3);opacity:.6}}
-
     #sunnyOverlay{position:fixed; inset:0; z-index:30000; display:none; background:rgba(0,0,0,.7); backdrop-filter:blur(2px)}
     #sunnyOverlay.show{ display:grid; place-items:center }
     .sunny-modal{ width:min(900px,92vw); aspect-ratio:16/9; background:#000; border-radius:14px; position:relative; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08) }
     .sunny-modal iframe{ width:100%; height:100%; border:0 }
     .sunny-close{ position:absolute; top:8px; right:8px; z-index:2; border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer; background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12) }
 
-    /* Mobile / tablet */
-    @media (max-width: 1024px){
-      .grid{ grid-template-columns:1fr; gap:12px; }
+    /* Tile modal toggle buttons */
+    .toggle-btn{position:relative}
+    .toggle-btn.active{outline:2px solid var(--accent);box-shadow:0 0 0 4px rgba(94,225,255,.15), inset 0 0 0 1px rgba(255,255,255,.12)}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .grid{ grid-template-columns:1fr }
+      .badge{width:120px;height:120px}
+      .cell{height:76px;font-size:24px}
     }
-    @media (max-width: 640px){
-      .board{gap:10px}
-      .cell{font-size:clamp(16px,5vw,22px); border-radius:12px}
-      .badge{width:110px;height:110px}
+    @media (max-width:640px){
+      .app{ padding:0 14px 84px }
+      .siren-btn{ top:auto; left:50%; bottom:12px; transform:translateX(-50%); padding:8px 12px; border-radius:12px; font-weight:800; font-size:14px }
+      .badge{ width:110px; height:110px }
+      .team-name input{ width:clamp(110px,70%,180px) }
+      .cell{height:64px;font-size:22px;border-radius:12px}
       .team-members{flex-wrap:nowrap;overflow-x:auto;gap:8px;justify-content:flex-start}
     }
   </style>
@@ -136,9 +161,9 @@
         <a href="index.html" class="btn secondary">← Back to Main</a>
         <button id="newJepBtn" class="btn">New Jeopardy</button>
       </div>
-      <div class="row">
-        <h1>Jeopardy Scoreboard</h1>
-        <button id="musicBtn" class="btn small secondary" title="Play/Pause theme">🎵 Theme</button>
+      <div class="music-row">
+        <button id="musicTheme" class="music-btn">♪ Theme</button>
+        <button id="musicFinal" class="music-btn">♪ Final</button>
       </div>
     </header>
 
@@ -146,7 +171,7 @@
       <!-- LEFT: Board -->
       <section class="card">
         <h3 class="section-title">Board</h3>
-        <div id="board" class="board"></div>
+        <div id="board"></div>
         <div class="divider"></div>
         <button id="finalBtn" class="btn success">Final Jeopardy</button>
       </section>
@@ -172,13 +197,15 @@
         <h3 class="section-title">Scoreboard</h3>
         <div id="score" class="score"></div>
 
-        <div class="man">
-          <div class="row">
+        <div class="jp-manual">
+          <div class="man-row">
+            <span class="man-label" id="lblA">Team A</span>
             <button class="btn" id="aMinus">−</button>
             <input id="aDelta" type="number" class="num" value="100" />
             <button class="btn" id="aPlus">+</button>
           </div>
-          <div class="row">
+          <div class="man-row">
+            <span class="man-label" id="lblB">Team B</span>
             <button class="btn" id="bMinus">−</button>
             <input id="bDelta" type="number" class="num" value="100" />
             <button class="btn" id="bPlus">+</button>
@@ -187,7 +214,7 @@
 
         <div class="divider"></div>
         <h3 class="section-title">Roster</h3>
-        <div id="roster" class="roster"></div>
+        <div id="jpRoster"></div>
       </aside>
     </div>
   </div>
@@ -196,19 +223,19 @@
   <div id="tileOverlay" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.7);backdrop-filter:blur(2px);z-index:30000">
     <div class="card" style="width:min(440px,92vw)">
       <h3 id="tileTitle" class="section-title">$400</h3>
-      <div class="row" style="justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <div class="row" style="justify-content:space-between">
         <div>
           <div style="font-weight:700;margin-bottom:6px">Which team answered?</div>
           <div class="row">
-            <button class="btn" id="tileTeamA">Team A</button>
-            <button class="btn" id="tileTeamB">Team B</button>
+            <button class="btn toggle-btn" id="tileTeamA" aria-pressed="true">Team A</button>
+            <button class="btn toggle-btn" id="tileTeamB" aria-pressed="false">Team B</button>
           </div>
         </div>
         <div>
           <div style="font-weight:700;margin-bottom:6px">Result</div>
           <div class="row">
-            <button class="btn success" id="tileRight">Right</button>
-            <button class="btn secondary" id="tileWrong">Wrong</button>
+            <button class="btn success toggle-btn" id="tileRight" aria-pressed="true">Right</button>
+            <button class="btn secondary toggle-btn" id="tileWrong" aria-pressed="false">Wrong</button>
           </div>
         </div>
       </div>
@@ -236,7 +263,7 @@
   <div id="finalOverlay" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.7);backdrop-filter:blur(2px);z-index:30000">
     <div class="card" style="width:min(520px,92vw)">
       <h3 class="section-title">Final Jeopardy</h3>
-      <div class="row" style="gap:20px;justify-content:space-between;flex-wrap:wrap">
+      <div class="row" style="gap:20px;justify-content:space-between">
         <div>
           <div style="opacity:.9;margin-bottom:6px" id="fjAName">Team A</div>
           <input id="fjAWager" type="number" min="0" value="0" class="btn" style="width:160px;background:#132b57" />
@@ -263,12 +290,12 @@
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    /* ---------- Short helpers ---------- */
+    /* ---------- Helpers ---------- */
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
     const initials = n => n.split(/\s+/).map(s=>s[0]).join('').toUpperCase();
 
-    /* ---------- Sunny overlay (same behavior as main) ---------- */
+    /* Sunny overlay (unchanged) */
     function buildEmbedUrl(id){
       const params = new URLSearchParams({autoplay:"1", mute:"1", playsinline:"1", modestbranding:"1", rel:"0"});
       return `https://www.youtube.com/embed/${id}?${params.toString()}`;
@@ -276,8 +303,7 @@
     const SUNNY_SHORTS = ['2uK7aPgVNLI','JSFOr7ZGG18','wjDFqPBxIkI','ywGHeCD_BZc','skJGJV8QLOY','wMtm5wkMdg8','H7j53N4l3HA','wXk0TWqg3WM','UVIsGSlW2gs','NYpEqCpgsYo','yCZ-5a6GBtE','XCFwkOZzRSM','-ygA9VJEL-s','6rjG0OFvVBg','be8s6Cz4FJw','sxvElyepIBQ','NETjjgCZAdM','tyfnHOqLv0U','fHTNNiRJTxQ','xW9ZybNOq9Q'];
     (function initSunnyPopup(){
       const btn = $('#emergencyBtn'), overlay = $('#sunnyOverlay'), closeBtn = $('#sunnyClose'), mount = $('#sunnyPlayer');
-      let ytReady=false, player=null;
-      window.onYouTubeIframeAPIReady = function(){ ytReady=true; };
+      let ytReady=false, player=null; window.onYouTubeIframeAPIReady = function(){ ytReady=true; };
       const randomShortId = ()=> SUNNY_SHORTS[Math.floor(Math.random()*SUNNY_SHORTS.length)];
       function openOverlay(){ overlay.classList.add('show'); overlay.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
       function closeOverlay(){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; try{ player&&player.destroy&&player.destroy(); }catch{} player=null; mount.innerHTML=''; }
@@ -290,54 +316,41 @@
         }
         mount.innerHTML = `<iframe src="${buildEmbedUrl(id)}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0"></iframe>`;
       }
-      btn.addEventListener('click', ()=>{ openOverlay(); playShort(randomShortId()); pauseTheme(); });
+      btn.addEventListener('click', ()=>{ openOverlay(); playShort(randomShortId()); });
       closeBtn.addEventListener('click', closeOverlay);
       overlay.addEventListener('click', (e)=>{ if (e.target===overlay) closeOverlay(); });
       document.addEventListener('keydown', (e)=>{ if (e.key==='Escape' && overlay.classList.contains('show')) closeOverlay(); });
     })();
 
-    /* ---------- Theme music (click to toggle) ---------- */
-    const theme = new Audio('assets/jeopardy_theme.mp3');
-    theme.preload = 'auto';
-    let themeWanted = false; // user intent
-    const musicBtn = $('#musicBtn');
-
-    function playTheme(){
-      themeWanted = true;
-      theme.loop = true;
-      theme.play().then(()=> musicBtn.textContent = '⏸ Theme').catch(()=>{
-        // If blocked, start on first gesture
-        const kick = ()=>{ theme.play().catch(()=>{}); document.removeEventListener('click', kick, {once:true}); };
-        document.addEventListener('click', kick, {once:true});
-        musicBtn.textContent = '⏸ Theme';
-      });
+    /* Music toggles */
+    const tracks = { theme: new Audio('assets/jeopardy_theme.mp3'), final: new Audio('assets/jeopardy_theme_final.mp3') };
+    Object.values(tracks).forEach(a => { a.preload='auto'; a.loop=true; });
+    function stopAll(except){
+      for (const [k,a] of Object.entries(tracks)){ if (k!==except){ a.pause(); a.currentTime = 0; } }
+      $('#musicTheme').classList.toggle('playing', !tracks.theme.paused);
+      $('#musicFinal').classList.toggle('playing', !tracks.final.paused);
     }
-    function pauseTheme(){
-      themeWanted = false;
-      theme.pause(); theme.currentTime = 0;
-      musicBtn.textContent = '🎵 Theme';
+    function togglePlay(which){
+      const btn = which==='theme' ? $('#musicTheme') : $('#musicFinal');
+      const audio = tracks[which];
+      if (!audio.paused){ audio.pause(); btn.classList.remove('playing'); return; }
+      stopAll(which);
+      audio.play().then(()=> btn.classList.add('playing')).catch(()=>{});
     }
-    musicBtn.addEventListener('click', ()=>{
-      if (themeWanted) pauseTheme(); else playTheme();
-    });
+    $('#musicTheme').addEventListener('click', ()=>togglePlay('theme'));
+    $('#musicFinal').addEventListener('click', ()=>togglePlay('final'));
 
-    // Try to start on load (will be blocked on iOS until first gesture; button handles it)
-    // Comment out the next line if you prefer silent by default:
-    // playTheme();
-
-    /* ---------- State ---------- */
-    const VALUES = [200,400,600,800,1000]; // top -> bottom
+    /* State */
+    const VALUES = [200,400,600,800,1000];
     let PEOPLE=[], selectedIds=new Set();
     let teamA=[], teamB=[];
     let teamANameVal='Team A', teamBNameVal='Team B';
     let SCORE_A=0, SCORE_B=0;
-    let BOARD = {}; // "c-r" => {value, used, team, right}
+    let BOARD = {};
 
-    /* ---------- Load roster from main app if present ---------- */
     (function restoreFromMain(){
       try{
-        const raw = localStorage.getItem('trivia_state');
-        if(!raw) return;
+        const raw = localStorage.getItem('trivia_state'); if(!raw) return;
         const s = JSON.parse(raw);
         PEOPLE = s.PEOPLE || [];
         selectedIds = new Set(s.selectedIds || PEOPLE.map(p=>p.id));
@@ -346,7 +359,6 @@
       }catch{}
     })();
 
-    /* ---------- Save/restore jeopardy state ---------- */
     function saveLocal(){
       const state = {
         jeopardy: { BOARD, SCORE_A, SCORE_B, teamA: teamA.map(p=>p.id), teamB: teamB.map(p=>p.id), teamAName: teamANameVal, teamBName: teamBNameVal },
@@ -356,8 +368,7 @@
     }
     function restoreLocal(){
       try{
-        const raw = localStorage.getItem('jeopardy_state');
-        if(!raw) return;
+        const raw = localStorage.getItem('jeopardy_state'); if(!raw) return;
         const s = JSON.parse(raw);
         if (s.PEOPLE && !PEOPLE.length) PEOPLE = s.PEOPLE;
         if (s.selectedIds) selectedIds = new Set(s.selectedIds);
@@ -371,22 +382,24 @@
       }catch{}
     }
 
-    /* ---------- Roster (drag to team; no toggles) ---------- */
+    /* Roster */
     function renderRoster(){
-      const wrap=$('#roster'); wrap.innerHTML='';
+      const wrap = document.getElementById('jpRoster'); if (!wrap) return;
+      wrap.innerHTML = '';
       PEOPLE.forEach(p=>{
-        const row=document.createElement('div'); row.className='person'; row.draggable=true; row.dataset.id=p.id; row.title='Drag onto a team badge';
-        const av=document.createElement('div'); av.className='avatar'; av.style.background=p.color||'#9ad8ff';
-        if (p.photo){ const img=new Image(); img.src=p.photo; img.alt=p.name; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; img.draggable=false; av.appendChild(img); }
-        else av.textContent=initials(p.name);
-        const name=document.createElement('div'); name.textContent=p.name; name.style.flex='1';
-        row.appendChild(av); row.appendChild(name);
-        row.addEventListener('dragstart',e=>{ e.dataTransfer.setData('text/plain', p.id); });
-        wrap.appendChild(row);
+        const card = document.createElement('div'); card.className = 'jp-pcard'; card.draggable = true; card.dataset.id = p.id; card.title='Drag onto a team badge';
+        const av = document.createElement('div'); av.className = 'avatar';
+        if (p.photo){ const img = new Image(); img.src = p.photo; img.alt = p.name; img.draggable = false; av.appendChild(img); }
+        else { av.textContent = (p.name||'')[0]?.toUpperCase() || '?'; }
+        const nm = document.createElement('div'); nm.className = 'name'; nm.textContent = p.name;
+        card.appendChild(av); card.appendChild(nm);
+        card.addEventListener('dragstart', e=>{ card.classList.add('dragging'); e.dataTransfer.setData('text/plain', p.id); e.dataTransfer.effectAllowed='move'; });
+        card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+        wrap.appendChild(card);
       });
     }
 
-    /* ---------- Drag to team badges ---------- */
+    /* Drag to team badges */
     function addToTeam(letter, person){
       if (!person) return;
       if (teamA.some(x=>x.id===person.id) || teamB.some(x=>x.id===person.id)) return;
@@ -403,32 +416,108 @@
         addToTeam(ix===0?'A':'B', p);
       });
     });
-
     function removeFromTeam(letter, id){
       if (letter==='A') teamA = teamA.filter(p=>p.id!==id); else teamB = teamB.filter(p=>p.id!==id);
       renderTeams(); saveLocal();
     }
+    window.removeFromTeam = removeFromTeam;
 
-    function renderBadges(){
-      const draw = (container, team)=>{
-        container.innerHTML='';
-        const size=140, R=62, cx=size/2, cy=size/2;
-        const c = document.createElement('canvas'); c.width=size; c.height=size; const ctx=c.getContext('2d');
-        ctx.fillStyle='#0e1f42'; ctx.beginPath(); ctx.arc(cx,cy,R+10,0,Math.PI*2); ctx.fill();
-        const n=Math.max(1,Math.min(4,team.length||1)); const span=(2*Math.PI)/n;
-        for(let i=0;i<n;i++){
-          const a0=-Math.PI/2 + i*span, a1=-Math.PI/2 + (i+1)*span;
-          ctx.save(); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1,false); ctx.closePath(); ctx.clip();
-          ctx.fillStyle=team[i]?.color||'#9ad8ff'; ctx.fillRect(0,0,size,size); ctx.restore();
-          const mid=(a0+a1)/2, rr=44;
-          ctx.fillStyle='#0a1326'; ctx.font='bold 28px ui-sans-serif,system-ui,Segoe UI,Roboto';
-          ctx.textAlign='center'; ctx.textBaseline='middle';
-          ctx.fillText(team[i]?initials(team[i].name):'', cx+Math.cos(mid)*rr, cy+Math.sin(mid)*rr);
+    /* Image helpers for badge drawing */
+    const _imgCache = new Map();
+    function loadImage(src){
+      return new Promise((res,reject)=>{
+        if (!src){ reject(); return; }
+        if (_imgCache.has(src)) return res(_imgCache.get(src));
+        const img = new Image();
+        img.onload = ()=>{ _imgCache.set(src,img); res(img); };
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+    function drawImageCover(ctx, img, cx, cy, diam){
+      const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+      const scale = Math.max(diam / w, diam / h);
+      const sw = w * scale, sh = h * scale;
+      const sx = (sw - diam) / 2, sy = (sh - diam) / 2;
+      const off = document.createElement('canvas'); off.width = off.height = diam;
+      const octx = off.getContext('2d');
+      octx.drawImage(img, -sx, -sy, sw, sh);
+      ctx.drawImage(off, cx - diam/2, cy - diam/2);
+    }
+
+    /* Team badges with photos — keep rim inside canvas */
+    async function renderBadges(){
+      const drawTeam = async (container, team)=>{
+        container.innerHTML = '';
+        const size = container.clientWidth || 150;
+
+        // leave a 4px safe margin inside canvas for 6px stroke
+        const stroke = 6;
+        const margin = 4;
+        const R = (size/2) - (stroke/2) - margin - 10; // 10px extra for outer ring gap
+        const rimR = R + 10;
+
+        const cx = size/2, cy = size/2;
+
+        const can = document.createElement('canvas');
+        can.width = size; can.height = size;
+        const ctx = can.getContext('2d');
+
+        // base disc under photos
+        ctx.fillStyle = '#0e1f42';
+        ctx.beginPath(); ctx.arc(cx,cy,rimR,0,Math.PI*2); ctx.fill();
+
+        const n = Math.max(1, Math.min(4, team.length || 0));
+        const span = (2*Math.PI)/Math.max(1,n);
+
+        for (let i=0;i<Math.max(1,n);i++){
+          const p = team[i];
+          const a0 = -Math.PI/2 + i*span;
+          const a1 = -Math.PI/2 + (i+1)*span;
+
+          ctx.save();
+          ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a0,a1,false); ctx.closePath(); ctx.clip();
+
+          if (p && p.photo){
+            try{
+              const img = await loadImage(p.photo);
+              drawImageCover(ctx, img, cx, cy, R*2);
+            }catch{
+              ctx.fillStyle = p?.color || '#9ad8ff';
+              ctx.fillRect(0,0,size,size);
+            }
+          }else{
+            ctx.fillStyle = p?.color || '#9ad8ff';
+            ctx.fillRect(0,0,size,size);
+            if (p){
+              ctx.fillStyle='#0a1326'; ctx.font='bold 28px ui-sans-serif,system-ui,Segoe UI,Roboto';
+              ctx.textAlign='center'; ctx.textBaseline='middle';
+              ctx.fillText(initials(p.name), cx, cy);
+            }
+          }
+          ctx.restore();
         }
-        ctx.strokeStyle='rgba(255,255,255,.85)'; ctx.lineWidth=6; ctx.beginPath(); ctx.arc(cx,cy,R+10,0,Math.PI*2); ctx.stroke();
-        container.appendChild(c);
+
+        // inner dividers
+        if (n >= 2){
+          ctx.strokeStyle = 'rgba(255,255,255,.85)';
+          ctx.lineWidth = (n===2) ? 6 : 4;
+          for(let i=0;i<n;i++){
+            const ang = -Math.PI/2 + i*span;
+            ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx + Math.cos(ang)*R, cy + Math.sin(ang)*R); ctx.stroke();
+          }
+        }
+
+        // outer white rim (kept inside canvas)
+        ctx.strokeStyle = 'rgba(255,255,255,.95)';
+        ctx.lineWidth = stroke;
+        ctx.beginPath(); ctx.arc(cx,cy,rimR,0,Math.PI*2); ctx.stroke();
+
+        container.appendChild(can);
       };
-      draw($('#badgeA'), teamA); draw($('#badgeB'), teamB);
+
+      await drawTeam(document.getElementById('badgeA'), teamA);
+      await drawTeam(document.getElementById('badgeB'), teamB);
     }
 
     function renderTeams(){
@@ -440,27 +529,29 @@
         <div class="score-row"><div id="sbA">${teamANameVal}</div><div id="sa">${SCORE_A}</div></div>
         <div class="score-row"><div id="sbB">${teamBNameVal}</div><div id="sb">${SCORE_B}</div></div>
       `;
+      $('#lblA').textContent = teamANameVal;
+      $('#lblB').textContent = teamBNameVal;
       $('#fjAName').textContent = teamANameVal;
       $('#fjBName').textContent = teamBNameVal;
     }
-    window.removeFromTeam = removeFromTeam;
 
     $('#teamAName').addEventListener('input', ()=>{ teamANameVal=$('#teamAName').value||'Team A'; renderTeams(); saveLocal(); });
     $('#teamBName').addEventListener('input', ()=>{ teamBNameVal=$('#teamBName').value||'Team B'; renderTeams(); saveLocal(); });
 
-    /* ---------- Manual score adjust ---------- */
-    const clampInt = v => (Number.isFinite(parseInt(v,10)) ? parseInt(v,10) : 0);
+    /* Manual score adjust */
+    const clampInt = v => { v=parseInt(v,10); return Number.isFinite(v)?v:0; };
     $('#aPlus').addEventListener('click', ()=>{ SCORE_A += clampInt($('#aDelta').value); renderTeams(); saveLocal(); });
     $('#aMinus').addEventListener('click', ()=>{ SCORE_A = Math.max(-99999, SCORE_A - clampInt($('#aDelta').value)); renderTeams(); saveLocal(); });
     $('#bPlus').addEventListener('click', ()=>{ SCORE_B += clampInt($('#bDelta').value); renderTeams(); saveLocal(); });
     $('#bMinus').addEventListener('click', ()=>{ SCORE_B = Math.max(-99999, SCORE_B - clampInt($('#bDelta').value)); renderTeams(); saveLocal(); });
 
-    /* ---------- Board ---------- */
+    /* Board */
     function buildBoard(){
       const boardEl = $('#board'); boardEl.innerHTML='';
-      for (let c=0;c<6;c++){
-        for (let r=0;r<5;r++){
-          const val = VALUES[r];                 // 200 -> 1000 top -> bottom
+      // Row-wise so each column reads 200→1000
+      for (let r=0; r<5; r++){
+        for (let c=0; c<6; c++){
+          const val = VALUES[r];
           const key = `${c}-${r}`;
           if (!BOARD[key]) BOARD[key] = { value: val, used:false, team:null, right:null };
           const cell = document.createElement('div');
@@ -473,7 +564,20 @@
       }
     }
 
+    /* Tile modal with visible toggles */
     let _pendingKey=null, _pendingTeam='A', _pendingRight=true;
+
+    function setToggle(el, on){
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function updateTileUI(){
+      setToggle($('#tileTeamA'), _pendingTeam==='A');
+      setToggle($('#tileTeamB'), _pendingTeam==='B');
+      setToggle($('#tileRight'), _pendingRight===true);
+      setToggle($('#tileWrong'), _pendingRight===false);
+    }
+
     function onTileClick(key){
       const t = BOARD[key];
       if (!t.used){ openTileModal(key); }
@@ -482,6 +586,7 @@
     function openTileModal(key){
       _pendingKey=key; _pendingTeam='A'; _pendingRight=true;
       $('#tileTitle').textContent = `$${BOARD[key].value}`;
+      updateTileUI();
       $('#tileOverlay').style.display='grid';
     }
     function closeTileModal(){ $('#tileOverlay').style.display='none'; }
@@ -493,10 +598,10 @@
     }
     function closeUndoModal(){ $('#undoOverlay').style.display='none'; }
 
-    $('#tileTeamA').addEventListener('click', ()=> _pendingTeam='A');
-    $('#tileTeamB').addEventListener('click', ()=> _pendingTeam='B');
-    $('#tileRight').addEventListener('click', ()=> _pendingRight=true);
-    $('#tileWrong').addEventListener('click', ()=> _pendingRight=false);
+    $('#tileTeamA').addEventListener('click', ()=>{ _pendingTeam='A'; updateTileUI(); });
+    $('#tileTeamB').addEventListener('click', ()=>{ _pendingTeam='B'; updateTileUI(); });
+    $('#tileRight').addEventListener('click', ()=>{ _pendingRight=true; updateTileUI(); });
+    $('#tileWrong').addEventListener('click', ()=>{ _pendingRight=false; updateTileUI(); });
     $('#tileCancel').addEventListener('click', closeTileModal);
     $('#tileApply').addEventListener('click', ()=>{
       const key=_pendingKey; if (!key) return;
@@ -519,7 +624,7 @@
       renderTeams(); saveLocal(); closeUndoModal();
     });
 
-    /* ---------- Final Jeopardy ---------- */
+    /* Final Jeopardy */
     function openFinal(){ $('#finalOverlay').style.display='grid'; }
     function closeFinal(){ $('#finalOverlay').style.display='none'; }
     $('#finalBtn').addEventListener('click', openFinal);
@@ -535,18 +640,17 @@
     $('#fjBRight').addEventListener('click', ()=>applyWager('B',true));
     $('#fjBWrong').addEventListener('click', ()=>applyWager('B',false));
 
-    /* ---------- New Jeopardy reset ---------- */
+    /* Reset */
     $('#newJepBtn').addEventListener('click', ()=>{
       if(!confirm('Start a NEW Jeopardy game? This resets the board and scores (teams kept).')) return;
       BOARD={}; SCORE_A=0; SCORE_B=0;
       buildBoard(); renderTeams(); saveLocal();
     });
 
-    /* ---------- Init ---------- */
+    /* Init */
     function init(){
       restoreLocal();
       buildBoard();
-      // mark used cells from saved state
       Object.entries(BOARD).forEach(([key,t])=>{ if (t.used){ const c=document.querySelector(`.cell[data-key="${key}"]`); if (c) c.classList.add('used'); }});
       renderRoster();
       renderTeams();
