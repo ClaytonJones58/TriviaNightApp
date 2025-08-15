@@ -599,7 +599,17 @@ input, select, textarea{font-size:16px}
     const DEFAULT_IDS = new Set(DEFAULT_PEOPLE.map(p=>p.id));
 
     const FAVORITES = [
-  {title:'TimeGuessr', url:'https://timeguessr.com/'},            // ⏳⛰ tests geography & history knowledge :contentReference[oaicite:1]{index=1}
+      {icon:'🟩',title:'Wordle',url:'https://www.nytimes.com/games/wordle/index.html'},
+      {icon:'🎵',title:'Bandle',url:'https://bandle.app/'},
+      {icon:'🧩',title:'Connections',url:'https://www.nytimes.com/games/connections'},
+      {icon:'🧠',title:'Daily Dozen',url:'https://www.jomboymedia.com/daily-dozen'},
+      {icon:'📰',title:'NYT Mini',url:'https://www.nytimes.com/crossword'}
+    ];
+    const MORE_GAMES = [
+      {title:'Framed',url:'https://framed.wtf/'},
+      {title:'GeoGuessr',url:'https://www.geoguessr.com/'},
+      {title:'Flagle',url:'https://flagle.io/'},
+      {title:'TimeGuessr', url:'https://timeguessr.com/'},            // ⏳⛰ tests geography & history knowledge :contentReference[oaicite:1]{index=1}
 {title:'COSTCODLE', url:'https://costcodle.com/'},              // 🛒 Guess everyday Costco price :contentReference[oaicite:2]{index=2}
 {title:'Gamedle', url:'https://www.gamedle.wtf/'},              // 🎮 Guess the video game from its cover art :contentReference[oaicite:3]{index=3}
 {title:'Semantle', url:'https://semantle.com/'},                // 🧠 Semantic word guessing—no word match, just meaning :contentReference[oaicite:4]{index=4}
@@ -619,11 +629,6 @@ input, select, textarea{font-size:16px}
 {title:'Enchant Wordle', url:'https://www.chess.com/puzzles/enchant-wordle'},          //  Word-puzzle styled like Wordle :contentReference[oaicite:18]{index=18}
 {title:'Pokemon Daily', url:'https://pokemondaily.net/'}                               //  Daily Pokémon content and trivia (fan site)
 
-    ];
-    const MORE_GAMES = [
-      {title:'Framed',url:'https://framed.wtf/'},
-      {title:'GeoGuessr',url:'https://www.geoguessr.com/'},
-      {title:'Flagle',url:'https://flagle.io/'}
     ];
 
     /* ---------- State ---------- */
