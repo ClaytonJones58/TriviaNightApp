@@ -599,11 +599,26 @@ input, select, textarea{font-size:16px}
     const DEFAULT_IDS = new Set(DEFAULT_PEOPLE.map(p=>p.id));
 
     const FAVORITES = [
-      {icon:'🟩',title:'Wordle',url:'https://www.nytimes.com/games/wordle/index.html'},
-      {icon:'🎵',title:'Bandle',url:'https://bandle.app/'},
-      {icon:'🧩',title:'Connections',url:'https://www.nytimes.com/games/connections'},
-      {icon:'🧠',title:'Daily Dozen',url:'https://www.jomboymedia.com/daily-dozen'},
-      {icon:'📰',title:'NYT Mini',url:'https://www.nytimes.com/crossword'}
+  {title:'TimeGuessr', url:'https://timeguessr.com/'},            // ⏳⛰ tests geography & history knowledge :contentReference[oaicite:1]{index=1}
+{title:'COSTCODLE', url:'https://costcodle.com/'},              // 🛒 Guess everyday Costco price :contentReference[oaicite:2]{index=2}
+{title:'Gamedle', url:'https://www.gamedle.wtf/'},              // 🎮 Guess the video game from its cover art :contentReference[oaicite:3]{index=3}
+{title:'Semantle', url:'https://semantle.com/'},                // 🧠 Semantic word guessing—no word match, just meaning :contentReference[oaicite:4]{index=4}
+{title:'Worldle', url:'https://worldle.teuteuf.fr/'},           //  地 Guess the country by outline and distance clues :contentReference[oaicite:5]{index=5}
+{title:'WhenTaken', url:'https://whentaken.com/'},              // 🕵️ Guess when and where a photo was taken :contentReference[oaicite:6]{index=6}
+{title:'Chronophoto', url:'https://adoryvo.github.io/lists/dailies.html#chronophoto'}, //  Guess photo year (Chronophoto entry) :contentReference[oaicite:7]{index=7}
+{title:'Angle', url:'https://adoryvo.github.io/lists/dailies.html#angle'},              //  Guess the angle visually :contentReference[oaicite:8]{index=8}
+{title:'Catfishing', url:'https://adoryvo.github.io/lists/dailies.html#catfishing'},    //  Guess wiki article from categories :contentReference[oaicite:9]{index=9}
+{title:'Disorderly', url:'https://adoryvo.github.io/lists/dailies.html#disorderly'},    //  Sort random items into categories :contentReference[oaicite:10]{index=10}
+{title:'Thrice', url:'https://adoryvo.github.io/lists/dailies.html#thrice'},            //  Five quiz questions with ≤3 hints :contentReference[oaicite:11]{index=11}
+{title:'Trivia Daily Dose by Sporcle', url:'https://adoryvo.github.io/lists/dailies.html'},//  Sporcle’s daily trivia quizzes :contentReference[oaicite:12]{index=12}
+{title:'Wikipedia Speedrun', url:'https://adoryvo.github.io/lists/dailies.html'},       //  Link-to-link wiki race challenges :contentReference[oaicite:13]{index=13}
+{title:'Letter Boxed', url:'https://www.nytimes.com/puzzles/letter-boxed'},              // 🔡 NYT word puzzle—connect letters daily :contentReference[oaicite:14]{index=14}
+{title:'Chess.com Daily Puzzle', url:'https://www.chess.com/puzzles/daily'},            //  Daily chess tactics challenge :contentReference[oaicite:15]{index=15}
+{title:'Chessguessr', url:'https://www.chess.com/play/online/time/classic'},           //  Geo-chess location guessing :contentReference[oaicite:16]{index=16}
+{title:'Chessle', url:'https://www.chess.com/play/online/cheatsheet'},                 //  Daily chess puzzle game :contentReference[oaicite:17]{index=17}
+{title:'Enchant Wordle', url:'https://www.chess.com/puzzles/enchant-wordle'},          //  Word-puzzle styled like Wordle :contentReference[oaicite:18]{index=18}
+{title:'Pokemon Daily', url:'https://pokemondaily.net/'}                               //  Daily Pokémon content and trivia (fan site)
+
     ];
     const MORE_GAMES = [
       {title:'Framed',url:'https://framed.wtf/'},
