@@ -382,7 +382,6 @@ input, select, textarea{font-size:16px}
     <header>
       <h1>🌀 Trivia Night</h1>
       <div class="row">
-        <button id="newGameBtn" class="btn">New Game</button>
         <button id="resetBtn" class="btn secondary">Reset</button>
         <button id="clearTeamsBtn" class="btn secondary">Clear Teams</button>
       </div>
@@ -1152,11 +1151,18 @@ input, select, textarea{font-size:16px}
           <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span><span>↗</span>
         </a>
       </div>`).join('');
-      more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
-        <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
-          <span class="glabel"><span class="ico">🎮</span><span>${g.title}</span></span><span>↗</span>
-        </a>
-      </div>`).join('');
+more.innerHTML = MORE_GAMES.map(g=>{
+  const id = gameIdFromTitle(g.title);
+  const played = trackedIDs.has(id) ? ' played' : '';
+  const flag = trackedIDs.has(id) ? '<span class="play-flag">✅</span>' : '';
+  return `<div class="game${played}">
+    <a href="${g.url}" data-gameid="${id}" data-title="${g.title}" class="game-link" target="_blank">
+      <span class="glabel"><span class="ico">${g.icon || '🎮'}</span><span>${g.title}</span></span>
+      <span>↗ ${flag}</span>
+    </a>
+  </div>`;
+}).join('');
+
       function attachHandlers(container){
         container.querySelectorAll('a.game-link').forEach(a=>{
           a.addEventListener('click',(e)=>{

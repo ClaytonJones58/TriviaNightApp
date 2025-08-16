@@ -76,7 +76,7 @@
 
     /* --- Wheel --- */
     .wheel-wrap{display:grid;gap:12px;grid-template-rows:auto 1fr auto}
-    .wheel-area{position:relative;display:grid;place-items:center;height:auto} /* JS sets height */
+    .wheel-area{position:relative;display:grid;place-items:center;height:auto}
     .rotor{
       position:relative; width:min(100%,420px); aspect-ratio:1/1; height:auto; margin:6px auto 0;
       transform-origin:center; will-change:transform;
@@ -127,6 +127,24 @@
     .chip button{border:0;background:#0a1e3c;color:#9ccfff;border-radius:6px;padding:0 6px;cursor:pointer}
 
     /* --- Games --- */
+    /* Games layout tweaks: add cushion between search + buttons */
+#gameSearch{
+  width:100%;
+  margin: 6px 0 12px;   /* <- the cushion */
+}
+
+.games > .row{
+  margin: 0 0 8px;      /* space under the buttons row */
+  flex-wrap: wrap;      /* let buttons wrap on small widths */
+  gap: 10px;            /* keep button spacing consistent */
+}
+
+/* Slightly tighter on small screens */
+@media (max-width: 600px){
+  #gameSearch{ margin: 8px 0 14px; }
+  .games > .row{ gap: 8px; }
+}
+
     .games{display:grid;gap:10px}
     .game-list{display:grid;gap:8px}
     .game a{
@@ -134,18 +152,13 @@
       display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
     }
     .glabel{display:flex;gap:10px;align-items:center}
-.ico {
-  width:22px;
-  height:22px;
-  border-radius:6px;
-  background:#0d1f3e;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  line-height:1;
-}
-
+    .ico{
+      width:22px;height:22px;border-radius:6px;background:#0d1f3e;
+      display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;
+    }
+    /* (4) Played markers */
+    .game.played a{ opacity:.55; }
+    .play-flag{ margin-left:8px; font-size:12px; opacity:.85; }
 
     /* --- Scoreboard --- */
     .score{display:grid;gap:10px}
@@ -172,101 +185,94 @@
     }
     .pick.active{outline:2px solid var(--accent);box-shadow:0 0 0 4px rgba(94,225,255,.15), inset 0 0 0 1px rgba(255,255,255,.06)}
 
-/* --- Manual points footer --- */
-.manual-points{margin-top:6px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.12);display:flex;flex-direction:column;gap:8px}
-.mp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}
-.mp-side{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
-.mp-side strong{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 14px ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#dff3ff}
-.mp-btn{border:0;background:#0a1e3c;color:#9ccfff;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-.mp-btn:hover{background:#102852}
-.mp-val{min-width:22px;text-align:center;font-weight:700}
+    /* --- Manual points footer --- */
+    .manual-points{margin-top:6px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.12);display:flex;flex-direction:column;gap:8px}
+    .mp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}
+    .mp-side{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+    .mp-side strong{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:700 14px ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#dff3ff}
+    .mp-btn{border:0;background:#0a1e3c;color:#9ccfff;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:800;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .mp-btn:hover{background:#102852}
+    .mp-val{min-width:22px;text-align:center;font-weight:700}
 
-/* --- Player Panel (anchored / mobile modal) --- */
+    /* --- Player Panel --- */
 .player-panel{
-  position:absolute; z-index:20000; width:600px; background:#10254a; border-radius:16px; padding:16px;
+  position:fixed; z-index:20000; width:600px; background:#10254a; border-radius:16px; padding:16px;
   box-shadow:0 18px 48px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.08);
   display:none; gap:16px
 }
-.player-panel.show{display:grid}
-.pp-head{display:grid;grid-template-columns:160px 1fr 36px;gap:16px;align-items:center}
-.pp-photo{width:160px;height:160px;border-radius:14px;overflow:hidden;background:#132b57;display:grid;place-items:center;font-weight:800;color:#dff3ff;font-size:36px}
-.pp-photo img{width:100%;height:100%;object-fit:cover}
-.pp-name{font-weight:800;font-size:26px;line-height:1.2}
-.pp-sub{opacity:.8;font-size:14px;margin-top:6px}
-.pp-close{border:0;background:#0a1e3c;color:#9ccfff;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-.pp-close:hover{background:#102852}
-.pp-controls{margin-top:6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px}
-.pp-label{font-size:13px;opacity:.85}
-#ppColor{width:64px;height:46px;border:0;border-radius:10px;padding:0;background:#132b57;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 
-/* Fix team name / chips overlap (desktop-safe base) */
-.teamA,.teamB{display:flex;flex-direction:column;align-items:center}
-.team-name{width:100%;max-width:260px;margin-top:10px;display:flex;flex-direction:column;gap:6px}
-.team-name label{line-height:1}
-/* We don't need the little "Name" label above the inputs */
-.teams .team-name label { display:none !important; }
+    .player-panel.show{display:grid}
+    .pp-head{display:grid;grid-template-columns:160px 1fr 36px;gap:16px;align-items:center}
+    .pp-photo{width:160px;height:160px;border-radius:14px;overflow:hidden;background:#132b57;display:grid;place-items:center;font-weight:800;color:#dff3ff;font-size:36px}
+    .pp-photo img{width:100%;height:100%;object-fit:cover}
+    .pp-name{font-weight:800;font-size:26px;line-height:1.2}
+    .pp-sub{opacity:.8;font-size:14px;margin-top:6px}
+    .pp-close{border:0;background:#0a1e3c;color:#9ccfff;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+    .pp-close:hover{background:#102852}
+    .pp-controls{margin-top:6px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px}
+    .pp-label{font-size:13px;opacity:.85}
+    #ppColor{width:64px;height:46px;border:0;border-radius:10px;padding:0;background:#132b57;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
 
-.team-name input{width:100%;max-width:260px}
-.team-members{margin-top:10px;max-width:260px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
-.team-members{flex-wrap:nowrap!important;overflow-x:auto;gap:6px;justify-content:center}
-.team-members::-webkit-scrollbar{height:6px}
-.team-members::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:3px}
+    /* Fix team name / chips overlap (desktop-safe base) */
+    .teamA,.teamB{display:flex;flex-direction:column;align-items:center}
+    .team-name{width:100%;max-width:260px;margin-top:10px;display:flex;flex-direction:column;gap:6px}
+    .team-name label{line-height:1}
+    .teams .team-name label { display:none !important; }
+    .team-name input{width:100%;max-width:260px}
+    .team-members{margin-top:10px;max-width:260px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+    .team-members{flex-wrap:nowrap!important;overflow-x:auto;gap:6px;justify-content:center}
+    .team-members::-webkit-scrollbar{height:6px}
+    .team-members::-webkit-scrollbar-thumb{background:rgba(255,255,255,.3);border-radius:3px}
 
-/* Prevent iOS zoom on input focus */
-input, select, textarea{font-size:16px}
-.team-name input{font-size:16px;line-height:1.2}
-.team-name input:focus{scroll-margin-top:72px}
+    /* Prevent iOS zoom on input focus */
+    input, select, textarea{font-size:16px}
+    .team-name input{font-size:16px;line-height:1.2}
+    .team-name input:focus{scroll-margin-top:72px}
 
-/* --- Coin Flip: button + overlay (desktop+mobile) --- */
-.coin-btn{
-  position:fixed; top:var(--safe-top); right:12px; z-index:10000;
-  padding:10px 14px; border:0; border-radius:12px; cursor:pointer;
-  background:linear-gradient(135deg,#ffd166,#ff8a5b); color:#001; font-weight:800;
-  box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
-}
-#coinOverlay{
-  position:fixed; inset:0; z-index:30000; display:none;
-  background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
-}
-#coinOverlay.show{ display:grid; place-items:center; }
-.coin-modal{
-  width:min(420px,92vw); background:#0a1326; border-radius:14px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
-  position:relative; overflow:hidden; padding:16px;
-}
-.coin-close{
-  position:absolute; top:8px; right:8px; z-index:2;
-  border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
-  background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
-}
-.coin-close:hover{ background:#102852; }
-.coin-wrap{ display:grid; gap:16px; place-items:center; padding:8px; }
-.coin-result{ font-weight:800; font-size:18px; color:#dff3ff; }
-.coin-actions{ display:flex; gap:10px; }
-.coin{
-  width:180px; height:180px; position:relative;
-  transform-style:preserve-3d; will-change:transform;
-  transition: transform 900ms cubic-bezier(.2,1,.2,1);
-}
-.face{
-  position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden; /* iOS Safari needs this */
-  box-shadow: inset 0 0 0 6px rgba(255,255,255,.85), 0 14px 28px rgba(0,0,0,.35);
-  background-size: cover; background-position: center;
-}
-.face.front{ background-image:url('assets/coin_heads.png'); transform:translateZ(1px); }
-.face.back { background-image:url('assets/coin_tails.png'); transform:rotateY(180deg) translateZ(1px); }
-
-.coin.spinning{ animation: coinspin 900ms cubic-bezier(.2,1,.2,1) infinite; }
-@keyframes coinspin{ from{ transform:rotateY(0deg);} to{ transform:rotateY(720deg);} }
-
-.coin::before{
-  content:''; position:absolute; inset:0; border-radius:50%;
-  background:linear-gradient(to right,#bbb,#eee,#bbb);
-  transform:translateZ(-1px);
-}
-
+    /* --- Coin Flip --- */
+    .coin-btn{
+      position:fixed; top:var(--safe-top); right:12px; z-index:10000;
+      padding:10px 14px; border:0; border-radius:12px; cursor:pointer;
+      background:linear-gradient(135deg,#ffd166,#ff8a5b); color:#001; font-weight:800;
+      box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.25);
+    }
+    #coinOverlay{
+      position:fixed; inset:0; z-index:30000; display:none;
+      background:rgba(0,0,0,.7); backdrop-filter:blur(2px);
+    }
+    #coinOverlay.show{ display:grid; place-items:center; }
+    .coin-modal{
+      width:min(420px,92vw); background:#0a1326; border-radius:14px;
+      box-shadow:0 20px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.08);
+      position:relative; overflow:hidden; padding:16px;
+    }
+    .coin-close{
+      position:absolute; top:8px; right:8px; z-index:2;
+      border:0; border-radius:10px; padding:6px 10px; font-weight:800; cursor:pointer;
+      background:#0a1e3c; color:#9ccfff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .coin-close:hover{ background:#102852; }
+    .coin-wrap{ display:grid; gap:16px; place-items:center; padding:8px; }
+    .coin-result{ font-weight:800; font-size:18px; color:#dff3ff; }
+    .coin-actions{ display:flex; gap:10px; }
+    .coin{
+      width:180px; height:180px; position:relative;
+      transform-style:preserve-3d; will-change:transform;
+      transition: transform 900ms cubic-bezier(.2,1,.2,1);
+    }
+    .face{
+      position:absolute; inset:0; border-radius:50%; display:grid; place-items:center;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      box-shadow: inset 0 0 0 6px rgba(255,255,255,.85), 0 14px 28px rgba(0,0,0,.35);
+      background-size: cover; background-position: center;
+    }
+    .face.front{ background-image:url('assets/coin_heads.png'); transform:translateZ(1px); }
+    .face.back { background-image:url('assets/coin_tails.png'); transform:rotateY(180deg) translateZ(1px); }
+    .coin.spinning{ animation: coinspin 900ms cubic-bezier(.2,1,.2,1) infinite; }
+    @keyframes coinspin{ from{ transform:rotateY(0deg);} to{ transform:rotateY(720deg);} }
+    .coin::before{ content:''; position:absolute; inset:0; border-radius:50%;
+      background:linear-gradient(to right,#bbb,#eee,#bbb); transform:translateZ(-1px); }
 
     /* ===== Tablet stack ===== */
     @media (max-width: 960px){
@@ -284,7 +290,7 @@ input, select, textarea{font-size:16px}
       .sunny-modal{width:92vw; aspect-ratio:9/16}
     }
 
-    /* ===== Mobile (<=600px) — CLEANED & FIXED ===== */
+    /* ===== Mobile ===== */
     @media (max-width: 600px){
       .app{ padding: 0 14px 84px; }
       .siren-btn{
@@ -296,32 +302,17 @@ input, select, textarea{font-size:16px}
       .wheel-area{ height:auto; }
       .rotor{ width:260px; height:260px; }
 
-      /* >>> Fix: badges overlapping inputs */
-      .teams{
-        grid-template-columns: 1fr 32px 1fr;
-        align-items:start;
-        row-gap:16px;
-      }
-      .badge{
-        width:120px; height:120px;
-        margin-bottom:26px;          /* extra gap so it never touches input */
-        pointer-events:none;         /* taps go through to the input */
-      }
-      .team-name{ position:relative; z-index:1; } /* input paints above badge */
+      .teams{ grid-template-columns: 1fr 32px 1fr; align-items:start; row-gap:16px; }
+      .badge{ width:120px; height:120px; margin-bottom:26px; pointer-events:none; }
+      .team-name{ position:relative; z-index:1; }
       .team-name input{ width:100%; }
       .team-members{ gap:8px; justify-content:flex-start; }
       .chip{ font-size:12px; padding:6px 8px; }
 
-      /* Coin button position tweak */
       .coin-btn{ top:12px; right:12px; }
 
-      /* Player Panel as mobile modal */
-      .player-panel{
-        position:fixed; inset:auto 12px 12px 12px; width:auto; max-width:none;
-        max-height:70vh; overflow:auto;
-      }
+      .player-panel{ position:fixed; inset:auto 12px 12px 12px; width:auto; max-width:none; max-height:70vh; overflow:auto; }
 
-      /* Right column tracker scroll */
       aside.card{ display:grid; grid-template-rows:auto auto 1fr; min-height:0; }
       #tracker{ max-height:42vh; overflow:auto; -webkit-overflow-scrolling:touch; padding-right:4px; min-height:0; }
     }
@@ -334,10 +325,7 @@ input, select, textarea{font-size:16px}
       .rotor{width:86vw; height:86vw}
     }
 
-    /* default: desktop/tablet wrap */
     .team-members{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-
-    /* phones: single row + horizontal scroll */
     @media (max-width:600px){
       .team-members{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;gap:8px}
     }
@@ -382,7 +370,6 @@ input, select, textarea{font-size:16px}
     <header>
       <h1>🌀 Trivia Night</h1>
       <div class="row">
-
         <button id="resetBtn" class="btn secondary">Reset</button>
         <button id="clearTeamsBtn" class="btn secondary">Clear Teams</button>
       </div>
@@ -450,6 +437,12 @@ input, select, textarea{font-size:16px}
 
         <div class="divider"></div>
         <h3 class="section-title">Games</h3>
+
+        <!-- (3) Filter box -->
+        <div class="row">
+          <input id="gameSearch" class="btn" placeholder="Filter games…" style="flex:1;min-width:260px">
+        </div>
+
         <div class="games">
           <div class="row">
             <button id="randomFavBtn" class="btn">Pick Random (Favorites)</button>
@@ -462,23 +455,20 @@ input, select, textarea{font-size:16px}
         </div>
       </section>
 
-<!-- RIGHT -->
-<aside class="card">
-  <h3 class="section-title">Scoreboard</h3>
-  <div id="score" class="score"></div>
+      <!-- RIGHT -->
+      <aside class="card">
+        <h3 class="section-title">Scoreboard</h3>
+        <div id="score" class="score"></div>
 
-  <div class="divider" style="margin:14px 0"></div>
-  <h3 class="section-title">Game Tracker</h3>
-  <div id="tracker" class="games" style="gap:10px"></div>
+        <div class="divider" style="margin:14px 0"></div>
+        <h3 class="section-title">Game Tracker</h3>
+        <div id="tracker" class="games" style="gap:10px"></div>
 
-  <!-- ADD THIS -->
-  <div class="divider" style="margin:14px 0"></div>
-  <a href="jeopardy.html" class="btn" style="display:block;text-align:center;width:100%;">
-    Jeopardy Scoreboard
-  </a>
-</aside>
-
-
+        <div class="divider" style="margin:14px 0"></div>
+        <a href="jeopardy.html" class="btn" style="display:block;text-align:center;width:100%;">Jeopardy Scoreboard</a>
+      </aside>
+    </div>
+  </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -605,7 +595,8 @@ input, select, textarea{font-size:16px}
       { id:'ben',    name:'Ben',      color:'#ffd166', photo:'assets/players/TrivPic_Ben.png' },
       { id:'rj',     name:'RJ',       color:'#93c5fd', photo:'assets/players/TrivPic_RJ.png' },
       { id:'sher',   name:'Sherlock', color:'#f472b6', photo:'assets/players/TrivPic_Sherlock.png' },
-      { id:'kelly',  name:'Kelly',    color:'#6ee7b7', photo:'assets/players/TrivPic_Kelly.png' }
+      { id:'kelly',  name:'Kelly',    color:'#6ee7b7', photo:'assets/players/TrivPic_Kelly.png' },
+      { id:'marc',   name:'Marc',     color:'#6ee7b7', photo:'assets/players/TrivPic_Marc.png' }
     ];
     const DEFAULT_IDS = new Set(DEFAULT_PEOPLE.map(p=>p.id));
 
@@ -617,35 +608,44 @@ input, select, textarea{font-size:16px}
       {icon:'📰',title:'NYT Mini',url:'https://www.nytimes.com/crossword'}
     ];
     const MORE_GAMES = [
-{icon:'🕰️',title:'TimeGuessr', url:'https://timeguessr.com/'},                 // Guess year & location of photos
-{icon:'🛒',title:'COSTCODLE', url:'https://costcodle.com/'},                    // Costco item guessing game
-{icon:'🎬',title:'Framed',url:'https://framed.wtf/'},                           // Guess the movie from a frame
-{icon:'🚩',title:'Flagle',url:'https://flagle.io/'},                            // Guess the flag
-{icon:'🎮',title:'Gamedle', url:'https://www.gamedle.wtf/'},                    // Guess the video game by cover art
-{icon:'🧠',title:'Semantle', url:'https://semantle.com/'},                      // Semantic word guessing
-{icon:'🕵️',title:'WhenTaken', url:'https://whentaken.com/'},                   // Guess when/where a photo was taken
-{icon:'📸',title:'Chronophoto', url:'https://www.chronophoto.app/'},            // Guess the year of a photo
-{icon:'📐',title:'Angle', url:'https://angle.wtf/'},                            // Guess the displayed angle
-{icon:'🚩',title:'Flaggle', url:'https://www.flaggle.io/'},                     // Guess the flag (alt link)
-{icon:'🎮',title:'GuessTheGame', url:'https://guessthe.game/'},                 // Guess the video game from screenshots
-{icon:'🎵',title:'Heardle Archive', url:'https://heardledecades.com/'},         // Guess songs by clips
-{icon:'🎥',title:'Cine2Nerdle', url:'https://www.cine2nerdle.com/'},            // Guess movies via emoji/math clues
-{icon:'🐾',title:'Pokedle', url:'https://pokedle.net/'},                        // Daily Pokémon guessing
-{icon:'✈️',title:'Travle', url:'https://travle.io/'},                           // Find travel paths between countries
-{icon:'📚',title:'Wikitrivia', url:'https://wikitrivia.tomjwatson.com/'},       // Place Wikipedia events on timeline
-{icon:'🖼️',title:'Artle', url:'https://www.nga.gov/artle.html'},               // Guess the artist
-{icon:'🔢',title:'Numberle', url:'https://numberle.org/'},                      // Guess the equation
-{icon:'📊',title:'Factle', url:'https://factle.app/'},                          // Rank facts/data in order
-{icon:'🌍',title:'Globle', url:'https://globle-game.com/'},                     // Guess mystery country w/ heatmap clues
-{icon:'🎞️',title:'MovieGrid', url:'https://moviegrid.io/'},                    // Daily movie trivia grid
-{icon:'🏈',title:'Immaculate Grid (NFL)', url:'https://www.immaculategrid.com/football'}, // NFL grid trivia
-{icon:'🏀',title:'HoopGrids (NBA)', url:'https://hoopgrids.com/'},              // NBA daily grid
-{icon:'🧝',title:'Tolkiendle', url:'https://tolkiendle.com/'},                  // Tolkien character guessing game
-{icon:'🏎️',title:'Driverle', url:'https://www.formula1points.com/driverle'},   // F1 driver guessing
-{icon:'🚦',title:'Stewardle', url:'https://stewardle.com/'},                    // Guess the F1 driver of the day
-{icon:'🏁',title:'F1Quizle', url:'https://f1quizle.com/'},                      // Daily F1 trivia game
-{icon:'💰',title:'GuessThePrice (ultra-luxury)', url:'https://guesstheprice.net/'} // Guess price of luxury items
-
+      {icon:'🕰️',title:'TimeGuessr', url:'https://timeguessr.com/'},
+      {icon:'🛒',title:'COSTCODLE', url:'https://costcodle.com/'},
+      {icon:'🎬',title:'Framed',url:'https://framed.wtf/'},
+      {icon:'🚩',title:'Flagle',url:'https://flagle.io/'},
+      {icon:'🎮',title:'Gamedle', url:'https://www.gamedle.wtf/'},
+      {icon:'🧠',title:'Semantle', url:'https://semantle.com/'},
+      {icon:'🕵️',title:'WhenTaken', url:'https://whentaken.com/'},
+      {icon:'📸',title:'Chronophoto', url:'https://www.chronophoto.app/'},
+      {icon:'📐',title:'Angle', url:'https://angle.wtf/'},
+      {icon:'🚩',title:'Flaggle', url:'https://www.flaggle.io/'},
+      {icon:'🎮',title:'GuessTheGame', url:'https://guessthe.game/'},
+      {icon:'🎵',title:'Heardle Archive', url:'https://heardledecades.com/'},
+      {icon:'🎥',title:'Cine2Nerdle', url:'https://www.cine2nerdle.com/'},
+      {icon:'🐾',title:'Pokedle', url:'https://pokedle.net/'},
+      {icon:'✈️',title:'Travle', url:'https://travle.io/'},
+      {icon:'📚',title:'Wikitrivia', url:'https://wikitrivia.tomjwatson.com/'},
+      {icon:'🖼️',title:'Artle', url:'https://www.nga.gov/artle.html'},
+      {icon:'🔢',title:'Numberle', url:'https://numberle.org/'},
+      {icon:'📊',title:'Factle', url:'https://factle.app/'},
+      {icon:'🌍',title:'Globle', url:'https://globle-game.com/'},
+      {icon:'🎞️',title:'MovieGrid', url:'https://moviegrid.io/'},
+      {icon:'🏈',title:'Immaculate Grid (NFL)', url:'https://www.immaculategrid.com/football'},
+      {icon:'🏀',title:'HoopGrids (NBA)', url:'https://hoopgrids.com/'},
+      {icon:'🧝',title:'Tolkiendle', url:'https://tolkiendle.com/'},
+      {icon:'🏎️',title:'Driverle', url:'https://www.formula1points.com/driverle'},
+      {icon:'🚦',title:'Stewardle', url:'https://stewardle.com/'},
+      {icon:'🏁',title:'F1Quizle', url:'https://f1quizle.com/'},
+      {icon:'🙂', title:'FaceGuesser', url:'https://www.faceguesser.com'},
+      {icon:'🏠', title:'GuessThe.house', url:'https://guessthe.house'},
+      {icon:'🎮', title:'GuessTheGame', url:'https://guessthe.game'},
+      {icon:'🎬', title:'MovieToMovie', url:'https://movietomovie.com'},
+      {icon:'🍿', title:'Flickle', url:'https://flickle.app'},
+      {icon:'🗓️',title:'WhenTaken (Movies)', url:'https://movies.whentaken.com'},
+      {icon:'🗺️',title:'Statele', url:'https://statele.teuteuf.fr'},
+      {icon:'🍽️',title:'FoodGuessr', url:'https://www.foodguessr.com'},
+      {icon:'➕➖',title:'More or Less', url:'https://lessgames.com/moreless'},
+      {icon:'🏷️',title:'GuessTheLogo', url:'https://guessthelogo.wtf'},
+      {icon:'💰',title:'GuessThePrice (ultra-luxury)', url:'https://guesstheprice.net/'}
     ];
 
     /* ---------- State ---------- */
@@ -692,11 +692,10 @@ input, select, textarea{font-size:16px}
         teamANameVal='Team A'; teamBNameVal='Team B'; savedFormat='2v2';
       }
       const defaultsById = Object.fromEntries(DEFAULT_PEOPLE.map(p => [p.id, p]));
-      // Merge saved people with defaults, but ALWAYS keep the default photo for built-ins
       PEOPLE = PEOPLE.map(p => {
         const d = defaultsById[p.id] || {};
         const merged = { ...d, ...p };
-        if (DEFAULT_IDS.has(p.id)) merged.photo = d.photo; // force default photo path
+        if (DEFAULT_IDS.has(p.id)) merged.photo = d.photo;
         return merged;
       });
     }
@@ -724,8 +723,10 @@ input, select, textarea{font-size:16px}
     const newNameEl = $('#newName');
     const newColorEl = $('#newColor');
     const addBtn = $('#addBtn');
+
+    /* (1) Hotkeys will use these two: */
     const randomFavBtn = $('#randomFavBtn');
-const randomAllBtn = $('#randomAllBtn');
+    const randomAllBtn = $('#randomAllBtn');
 
     /* ---- Canvas ---- */
     const canvas = $('#wheelCanvas');
@@ -833,6 +834,10 @@ const randomAllBtn = $('#randomAllBtn');
     }
 
     /* ---------- Drag to badges ---------- */
+    const byId = id => PEOPLE.find(p=>p.id===id);
+    const initials = n => n.split(/\s+/).map(s=>s[0]).join('').toUpperCase();
+    const uid = () => 'p'+Math.random().toString(36).slice(2,8);
+
     [badgeA, badgeB].forEach(b=>{
       b.addEventListener('dragover', e=>{ e.preventDefault(); b.classList.add('drop-target'); });
       b.addEventListener('dragleave', ()=> b.classList.remove('drop-target'));
@@ -847,11 +852,6 @@ const randomAllBtn = $('#randomAllBtn');
         syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
       });
     });
-
-    /* ---------- Helpers ---------- */
-    const byId = id => PEOPLE.find(p=>p.id===id);
-    const initials = n => n.split(/\s+/).map(s=>s[0]).join('').toUpperCase();
-    const uid = () => 'p'+Math.random().toString(36).slice(2,8);
 
     function syncWheelFromSelected(){
       const assigned = new Set([...teamA.map(p=>p.id), ...teamB.map(p=>p.id)]);
@@ -939,36 +939,31 @@ const randomAllBtn = $('#randomAllBtn');
       ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.restore();
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    if (!n){
-  const rosieToken = ++_renderToken;
-  labelsEl.innerHTML='';
-  rotor.style.transition='none';
-  rotor.style.transform='rotate(0deg)';
-  void rotor.offsetHeight;
-  rotor.style.transition='';
+      if (!n){
+        const rosieToken = ++_renderToken;
+        labelsEl.innerHTML='';
+        rotor.style.transition='none';
+        rotor.style.transform='rotate(0deg)';
+        void rotor.offsetHeight;
+        rotor.style.transition='';
 
-  // >>> FIX: draw using the device pixel ratio transform
-  const cssPx = parseInt(getComputedStyle(canvas).width) || 320;
-  const dprFix = canvas.width / cssPx;
+        const cssPx = parseInt(getComputedStyle(canvas).width) || 320;
+        const dprFix = canvas.width / cssPx;
 
-  loadImage('assets/players/TrivPic_Rosie.png').then(img=>{
-    if (rosieToken!==_renderToken) return;
-
-    ctx.save();
-    ctx.setTransform(dprFix, 0, 0, dprFix, 0, 0);   // <-- important
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, R, 0, Math.PI*2);
-    ctx.closePath();
-    ctx.clip();
-
-    drawImageCover(ctx, img, cx, cy, R*2);         // fills the whole circle
-    ctx.restore();
-  }).catch(()=>{});
-  return;
-}
-
+        loadImage('assets/players/TrivPic_Rosie.png').then(img=>{
+          if (rosieToken!==_renderToken) return;
+          ctx.save();
+          ctx.setTransform(dprFix, 0, 0, dprFix, 0, 0);
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          ctx.beginPath();
+          ctx.arc(cx, cy, R, 0, Math.PI*2);
+          ctx.closePath();
+          ctx.clip();
+          drawImageCover(ctx, img, cx, cy, R*2);
+          ctx.restore();
+        }).catch(()=>{});
+        return;
+      }
 
       const step = (2*Math.PI)/n;
       const arcs = ids.map((id,i)=>({id,p:byId(id),a0:-Math.PI/2 + i*step, a1:-Math.PI/2 + (i+1)*step}));
@@ -1173,18 +1168,42 @@ const randomAllBtn = $('#randomAllBtn');
     }
 
     /* ---------- Games + Score ---------- */
+    // Helper: stable id from a title (matches tracker ids)
+    function gameIdFromTitle(title){
+      return String(title || '').toLowerCase().trim().replace(/\s+/g, '-');
+    }
+
     function renderGames(){
       const fav=$('#favList'), more=$('#moreList');
-      fav.innerHTML=FAVORITES.map(g=>`<div class="game">
-        <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
-          <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span><span>↗</span>
-        </a>
-      </div>`).join('');
-  more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
-  <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
-    <span class="glabel"><span class="ico">${g.icon || '🎮'}</span><span>${g.title}</span></span><span>↗</span>
-  </a>
-</div>`).join('');
+
+      /* (4) Build a set of already-tracked IDs, then mark items */
+      const trackedIDs = new Set((TRACKED_GAMES || []).map(g => g.id));
+
+      // Favorites
+      fav.innerHTML = FAVORITES.map(g=>{
+        const id = gameIdFromTitle(g.title);
+        const played = trackedIDs.has(id) ? ' played' : '';
+        const flag = trackedIDs.has(id) ? '<span class="play-flag">✅</span>' : '';
+        return `<div class="game${played}">
+          <a href="${g.url}" data-gameid="${id}" data-title="${g.title}" class="game-link" target="_blank">
+            <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span>
+            <span>↗ ${flag}</span>
+          </a>
+        </div>`;
+      }).join('');
+
+      // More games
+      more.innerHTML = MORE_GAMES.map(g=>{
+        const id = gameIdFromTitle(g.title);
+        const played = trackedIDs.has(id) ? ' played' : '';
+        const flag = trackedIDs.has(id) ? '<span class="play-flag">✅</span>' : '';
+        return `<div class="game${played}">
+          <a href="${g.url}" data-gameid="${id}" data-title="${g.title}" class="game-link" target="_blank">
+            <span class="glabel"><span class="ico">${g.icon || '🎮'}</span><span>${g.title}</span></span>
+            <span>↗ ${flag}</span>
+          </a>
+        </div>`;
+      }).join('');
 
       function attachHandlers(container){
         container.querySelectorAll('a.game-link').forEach(a=>{
@@ -1197,9 +1216,78 @@ const randomAllBtn = $('#randomAllBtn');
         });
       }
       attachHandlers(fav); attachHandlers(more);
+
+      /* (3) apply current filter after rendering */
+      filterGames();
     }
-    function upsertTrackedGame(game){ const existing=TRACKED_GAMES.find(g=>g.id===game.id); if (existing) return existing; const row={id:game.id,title:game.title,url:game.url,winner:null,shown:true}; TRACKED_GAMES.push(row); return row; }
-    function addGameToTracker(game){ upsertTrackedGame(game); renderGameTracker(); saveState(); }
+
+    /* ---------- Random game pickers ---------- */
+/* Helpers: choose a random available link (not already tracked = not .played) */
+function pickRandomFrom(containerSelector){
+  const container = document.querySelector(containerSelector);
+  if (!container) return alert('Whoops you played them all idiot');
+
+  const candidates = Array.from(
+    container.querySelectorAll('.game:not(.played) a.game-link')
+  );
+
+  if (!candidates.length){
+    alert('Whoops you played them all idiot');
+    return;
+  }
+
+  const a = candidates[Math.floor(Math.random() * candidates.length)];
+  const id = a.dataset.gameid;
+  const title = a.dataset.title;
+  // Use getAttribute so we always read the original href string
+  const url = a.getAttribute('href');
+
+  // Add to tracker and open in new tab (matches your normal click behavior)
+  addGameToTracker({ id, title, url });
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+/* Favorites only */
+randomFavBtn?.addEventListener('click', () => {
+  pickRandomFrom('#favList');
+});
+
+/* All = Favorites + More */
+randomAllBtn?.addEventListener('click', () => {
+  // Build a combined list on the fly and pick among them
+  const fav = Array.from(document.querySelectorAll('#favList .game:not(.played) a.game-link'));
+  const more = Array.from(document.querySelectorAll('#moreList .game:not(.played) a.game-link'));
+  const candidates = [...fav, ...more];
+
+  if (!candidates.length){
+    alert('Whoops you played them all idiot');
+    return;
+  }
+
+  const a = candidates[Math.floor(Math.random() * candidates.length)];
+  const id = a.dataset.gameid;
+  const title = a.dataset.title;
+  const url = a.getAttribute('href');
+
+  addGameToTracker({ id, title, url });
+  window.open(url, '_blank', 'noopener,noreferrer');
+});
+
+
+    function upsertTrackedGame(game){
+      const existing=TRACKED_GAMES.find(g=>g.id===game.id);
+      if (existing) return existing;
+      const row={id:game.id,title:game.title,url:game.url,winner:null,shown:true};
+      TRACKED_GAMES.push(row);
+      return row;
+    }
+    /* CHANGE #1: re-render game lists after adding */
+    function addGameToTracker(game){
+      upsertTrackedGame(game);
+      renderGameTracker();
+      renderGames();      // <- refresh played flags immediately
+      saveState();
+    }
     function renderGameTracker(){
       const wrap=$('#tracker'); if (!wrap) return;
       const nameA=teamAName.value||'Team A', nameB=teamBName.value||'Team B';
@@ -1243,9 +1331,13 @@ const randomAllBtn = $('#randomAllBtn');
       wrap.querySelectorAll('.track-card').forEach(card=>{
         const id=card.dataset.id;
         const g=TRACKED_GAMES.find(x=>x.id===id); if (!g) return;
+        /* CHANGE #2: also re-render game lists when removing */
         card.querySelector('[data-action="remove"]').addEventListener('click', ()=>{
           TRACKED_GAMES = TRACKED_GAMES.filter(x=>x.id!==g.id);
-          renderScore(); renderGameTracker(); saveState();
+          renderScore();
+          renderGameTracker();
+          renderGames();      // <- keep Favorites/More in sync
+          saveState();
         });
         card.querySelectorAll('[data-action="win"]').forEach(btn=>{
           btn.addEventListener('click', ()=>{
@@ -1266,36 +1358,6 @@ const randomAllBtn = $('#randomAllBtn');
       });
     }
 
-    /* ---------- Random game pickers (no repeats while on tracker) ---------- */
-function gameIdFromTitle(title){
-  return String(title || '').toLowerCase().trim().replace(/\s+/g,'-');
-}
-function pickRandomGameFrom(list){
-  const tracked = new Set(TRACKED_GAMES.map(g => g.id));
-  const pool = list
-    .map(g => ({...g, id: gameIdFromTitle(g.title)}))
-    .filter(g => !tracked.has(g.id));
-  if (pool.length === 0) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-// Favorites button
-randomFavBtn?.addEventListener('click', () => {
-  const g = pickRandomGameFrom(FAVORITES);
-  if (!g){ alert('Whoops you played all those already idiot'); return; }
-  addGameToTracker({ id:g.id, title:g.title, url:g.url });
-  window.open(g.url,'_blank','noopener,noreferrer');
-});
-
-// All (More games) button
-randomAllBtn?.addEventListener('click', () => {
-  const g = pickRandomGameFrom(MORE_GAMES);
-  if (!g){ alert('Whoops you played all those already idiot'); return; }
-  addGameToTracker({ id:g.id, title:g.title, url:g.url });
-  window.open(g.url,'_blank','noopener,noreferrer');
-});
-
-
     /* ---------- Save ---------- */
     function saveState(){
       const state={
@@ -1315,6 +1377,25 @@ randomAllBtn?.addEventListener('click', () => {
     }
 
     /* ---------- Controls ---------- */
+
+    /* (1) Global hotkeys (desktop) */
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      const k = e.key.toLowerCase();
+      if (k === 's') { spin(); return; }
+      if (k === 'f' && friendBtn.style.display !== 'none') { friendBtn.click(); return; }
+      if (k === 'o' && foeBtn.style.display !== 'none') { foeBtn.click(); return; }
+      if (k === 'g' && randomFavBtn) { randomFavBtn.click(); return; }
+      if (k === 'a' && randomAllBtn) { randomAllBtn.click(); return; }
+
+      if (k === '1') { MANUAL_A = (MANUAL_A|0) + 1; renderScore(); renderGameTracker(); saveState(); return; }
+      if (k === '2') { MANUAL_B = (MANUAL_B|0) + 1; renderScore(); renderGameTracker(); saveState(); return; }
+      if (k === '9') { MANUAL_A = Math.max(0, (MANUAL_A|0) - 1); renderScore(); renderGameTracker(); saveState(); return; }
+      if (k === '0') { MANUAL_B = Math.max(0, (MANUAL_B|0) - 1); renderScore(); renderGameTracker(); saveState(); return; }
+    });
+
     function addGuest(){
       const name=newNameEl.value.trim(); if(!name){ newNameEl.focus(); return; }
       const color=newColorEl.value||'#6ee7b7';
@@ -1327,50 +1408,50 @@ randomAllBtn?.addEventListener('click', () => {
     addBtn.addEventListener('click', addGuest);
     newNameEl.addEventListener('keydown', (e)=>{ if (e.key==='Enter') addGuest(); });
 
-$('#resetBtn').addEventListener('click',()=>{
-  if (!confirm('Reset everything? This will clear the tracker & scoreboard, set team names back to defaults, and remove everyone from the wheel.')) return;
+    /* Reset with confirmation */
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      const ok = confirm(
+        'Reset everything?\n\nThis will clear teams, team names, the scoreboard, the game tracker, and remove everyone from the wheel.'
+      );
+      if (!ok) return;
 
-  // Wheel / mode
-  resetRotor();
-  mode = 'normal';
-  chooser = null;
-  fofChoice = null;
-  lockSpin(false);
-  setFoFUI(false);
-  modeState.textContent = '';
+      // Stop any spin / FoF UI
+      resetRotor();
+      chooser = null;
+      fofChoice = null;
+      lockSpin(false);
+      setFoFUI(false);
+      modeState.textContent = '';
+      nextTeam = 'A';
 
-  // Teams
-  teamA = [];
-  teamB = [];
-  nextTeam = 'A';
+      // Clear teams
+      teamA = [];
+      teamB = [];
 
-  // Team names back to defaults (inputs + state)
-  teamANameVal = 'Team A';
-  teamBNameVal = 'Team B';
-  teamAName.value = teamANameVal;
-  teamBName.value = teamBNameVal;
+      // Take EVERYONE off the wheel
+      selectedIds = new Set();   // all toggles become "Off"
+      wheelIds = [];             // nothing to spin
 
-  // Game tracker & manual points
-  TRACKED_GAMES = [];
-  MANUAL_A = 0;
-  MANUAL_B = 0;
+      // Reset team names
+      teamANameVal = 'Team A';
+      teamBNameVal = 'Team B';
+      teamAName.value = teamANameVal;
+      teamBName.value = teamBNameVal;
 
-  // Take everyone off the wheel
-  selectedIds = new Set();   // no one selected
-  wheelIds = [];             // empty wheel
+      // Clear scoreboard and tracker (including manual points)
+      TRACKED_GAMES = [];
+      MANUAL_A = 0;
+      MANUAL_B = 0;
 
-  // Re-render + save
-  renderGameTracker();
-  renderScore();
-  renderRoster();
-  drawWheel();
-  updateMatchupUI();
-  saveState();
-});
-
-    $('#clearTeamsBtn').addEventListener('click',()=>{
-      teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false); nextTeam='A';
-      syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
+      // Re-render everything + save
+      renderRoster();            // updates roster toggles to Off
+      renderGameTracker();       // empties tracker
+      renderGames();             // CHANGE #3: clear played flags in lists
+      renderScore();             // resets scores to 0–0
+      syncWheelFromSelected();   // keeps wheel empty
+      drawWheel();               // shows empty/placeholder wheel
+      updateMatchupUI();
+      saveState();
     });
 
     modeNormal.addEventListener('click',()=>{mode='normal'; modeState.textContent=''; setFoFUI(false); lockSpin(false); modeFoF.classList.add('secondary'); modeNormal.classList.remove('secondary'); saveState();});
@@ -1379,8 +1460,44 @@ $('#resetBtn').addEventListener('click',()=>{
 
     teamAName.addEventListener('input', ()=>{ teamANameVal=teamAName.value||'Team A'; $('#sbA').textContent=teamANameVal; renderScore(); renderGameTracker(); saveState(); });
     teamBName.addEventListener('input', ()=>{ teamBNameVal=teamBName.value||'Team B'; $('#sbB').textContent=teamBNameVal; renderScore(); renderGameTracker(); saveState(); });
+    teamAName.addEventListener('blur', () => {
+  if (teamAName.value.trim() === '') {
+    teamAName.value = 'Team A';
+    teamAName.dispatchEvent(new Event('input')); // ensures UI updates
+  }
+});
 
-    /* ---------- Player Panel (anchored, large) ---------- */
+teamBName.addEventListener('blur', () => {
+  if (teamBName.value.trim() === '') {
+    teamBName.value = 'Team B';
+    teamBName.dispatchEvent(new Event('input')); // ensures UI updates
+  }
+});
+
+    // Clear the default label when focusing the input
+function _isDefault(el, fallback){ return (el.value || '').trim() === fallback; }
+
+teamAName.addEventListener('focus', () => {
+  if (_isDefault(teamAName, 'Team A')) teamAName.value = '';
+});
+
+teamBName.addEventListener('focus', () => {
+  if (_isDefault(teamBName, 'Team B')) teamBName.value = '';
+});
+
+
+    /* (3) Filter games by title */
+    const gameSearch = $('#gameSearch');
+    function filterGames(){
+      const q = (gameSearch?.value || '').toLowerCase();
+      $$('#favList .game, #moreList .game').forEach(card => {
+        const t = card.querySelector('.game-link')?.dataset.title?.toLowerCase() || '';
+        card.style.display = t.includes(q) ? '' : 'none';
+      });
+    }
+    gameSearch?.addEventListener('input', filterGames);
+
+    /* ---------- Player Panel ---------- */
     const PlayerPanel = (()=>{
       const el=document.createElement('div');
       el.className='player-panel';
@@ -1407,20 +1524,32 @@ $('#resetBtn').addEventListener('click',()=>{
       let currentPlayer = null;
 
       function clamp(val,min,max){ return Math.max(min, Math.min(max, val)); }
-      function positionNear(anchor){
-        const rect = anchor.getBoundingClientRect();
-        const scrollX = window.scrollX || window.pageXOffset;
-        const scrollY = window.scrollY || window.pageYOffset;
-        const desiredX = rect.right + 12 + scrollX;
-        const desiredY = rect.top + scrollY - 8;
-        const panelW = el.offsetWidth || 600;
-        const panelH = el.offsetHeight || 220;
-        const maxX = scrollX + document.documentElement.clientWidth  - panelW - 12;
-        const maxY = scrollY + document.documentElement.clientHeight - panelH - 12;
-        let x = desiredX; if (x > maxX) x = rect.left + scrollX - panelW - 12;
-        const y = clamp(desiredY, scrollY + 12, maxY);
-        el.style.left = x + 'px'; el.style.top = y + 'px';
-      }
+ function positionNear(anchor){
+  const rect = anchor.getBoundingClientRect(); // viewport coords
+  const desiredX = rect.right + 12;
+  const desiredY = rect.top - 8;
+
+  const panelW = el.offsetWidth || 600;
+  const panelH = el.offsetHeight || 220;
+
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+
+  const maxX = vw - panelW - 12;
+  const maxY = vh - panelH - 12;
+
+  // If it would overflow right, flip to the left side of the row
+  let x = desiredX;
+  if (x > maxX) x = rect.left - 12 - panelW;
+  if (x < 12)   x = 12;
+
+  // Clamp Y within viewport
+  let y = Math.max(12, Math.min(desiredY, maxY));
+
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+}
+
 
       function open(p, anchorEl){
         currentPlayer = p;
@@ -1431,13 +1560,11 @@ $('#resetBtn').addEventListener('click',()=>{
         colorEl.value = (p.color && /^#([0-9a-f]{3}){1,2}$/i.test(p.color)) ? p.color : '#6ee7b7';
 
         el.classList.add('show');
-        lockBodyScroll();
         requestAnimationFrame(()=> positionNear(anchorEl));
       }
 
       function close(){
         el.classList.remove('show');
-        unlockBodyScroll();
         currentPlayer = null;
       }
 
