@@ -134,7 +134,18 @@
       display:flex;align-items:center;justify-content:space-between;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)
     }
     .glabel{display:flex;gap:10px;align-items:center}
-    .ico{width:22px;height:22px;border-radius:6px;background:#0d1f3e;display:grid;place-items:center;font-size:13px}
+.ico {
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  background:#0d1f3e;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+}
+
 
     /* --- Scoreboard --- */
     .score{display:grid;gap:10px}
@@ -371,7 +382,7 @@ input, select, textarea{font-size:16px}
     <header>
       <h1>🌀 Trivia Night</h1>
       <div class="row">
-        <button id="newGameBtn" class="btn">New Game</button>
+
         <button id="resetBtn" class="btn secondary">Reset</button>
         <button id="clearTeamsBtn" class="btn secondary">Clear Teams</button>
       </div>
@@ -602,32 +613,38 @@ input, select, textarea{font-size:16px}
       {icon:'🟩',title:'Wordle',url:'https://www.nytimes.com/games/wordle/index.html'},
       {icon:'🎵',title:'Bandle',url:'https://bandle.app/'},
       {icon:'🧩',title:'Connections',url:'https://www.nytimes.com/games/connections'},
-      {icon:'🧠',title:'Daily Dozen',url:'https://www.jomboymedia.com/daily-dozen'},
+      {icon:'🧠',title:'Daily Dozen',url:'https://dailydozentrivia.com'},
       {icon:'📰',title:'NYT Mini',url:'https://www.nytimes.com/crossword'}
     ];
     const MORE_GAMES = [
-      {title:'Framed',url:'https://framed.wtf/'},
-      {title:'GeoGuessr',url:'https://www.geoguessr.com/'},
-      {title:'Flagle',url:'https://flagle.io/'},
-      {title:'TimeGuessr', url:'https://timeguessr.com/'},            // ⏳⛰ tests geography & history knowledge :contentReference[oaicite:1]{index=1}
-{title:'COSTCODLE', url:'https://costcodle.com/'},              // 🛒 Guess everyday Costco price :contentReference[oaicite:2]{index=2}
-{title:'Gamedle', url:'https://www.gamedle.wtf/'},              // 🎮 Guess the video game from its cover art :contentReference[oaicite:3]{index=3}
-{title:'Semantle', url:'https://semantle.com/'},                // 🧠 Semantic word guessing—no word match, just meaning :contentReference[oaicite:4]{index=4}
-{title:'Worldle', url:'https://worldle.teuteuf.fr/'},           //  地 Guess the country by outline and distance clues :contentReference[oaicite:5]{index=5}
-{title:'WhenTaken', url:'https://whentaken.com/'},              // 🕵️ Guess when and where a photo was taken :contentReference[oaicite:6]{index=6}
-{title:'Chronophoto', url:'https://adoryvo.github.io/lists/dailies.html#chronophoto'}, //  Guess photo year (Chronophoto entry) :contentReference[oaicite:7]{index=7}
-{title:'Angle', url:'https://adoryvo.github.io/lists/dailies.html#angle'},              //  Guess the angle visually :contentReference[oaicite:8]{index=8}
-{title:'Catfishing', url:'https://adoryvo.github.io/lists/dailies.html#catfishing'},    //  Guess wiki article from categories :contentReference[oaicite:9]{index=9}
-{title:'Disorderly', url:'https://adoryvo.github.io/lists/dailies.html#disorderly'},    //  Sort random items into categories :contentReference[oaicite:10]{index=10}
-{title:'Thrice', url:'https://adoryvo.github.io/lists/dailies.html#thrice'},            //  Five quiz questions with ≤3 hints :contentReference[oaicite:11]{index=11}
-{title:'Trivia Daily Dose by Sporcle', url:'https://adoryvo.github.io/lists/dailies.html'},//  Sporcle’s daily trivia quizzes :contentReference[oaicite:12]{index=12}
-{title:'Wikipedia Speedrun', url:'https://adoryvo.github.io/lists/dailies.html'},       //  Link-to-link wiki race challenges :contentReference[oaicite:13]{index=13}
-{title:'Letter Boxed', url:'https://www.nytimes.com/puzzles/letter-boxed'},              // 🔡 NYT word puzzle—connect letters daily :contentReference[oaicite:14]{index=14}
-{title:'Chess.com Daily Puzzle', url:'https://www.chess.com/puzzles/daily'},            //  Daily chess tactics challenge :contentReference[oaicite:15]{index=15}
-{title:'Chessguessr', url:'https://www.chess.com/play/online/time/classic'},           //  Geo-chess location guessing :contentReference[oaicite:16]{index=16}
-{title:'Chessle', url:'https://www.chess.com/play/online/cheatsheet'},                 //  Daily chess puzzle game :contentReference[oaicite:17]{index=17}
-{title:'Enchant Wordle', url:'https://www.chess.com/puzzles/enchant-wordle'},          //  Word-puzzle styled like Wordle :contentReference[oaicite:18]{index=18}
-{title:'Pokemon Daily', url:'https://pokemondaily.net/'}                               //  Daily Pokémon content and trivia (fan site)
+{icon:'🕰️',title:'TimeGuessr', url:'https://timeguessr.com/'},                 // Guess year & location of photos
+{icon:'🛒',title:'COSTCODLE', url:'https://costcodle.com/'},                    // Costco item guessing game
+{icon:'🎬',title:'Framed',url:'https://framed.wtf/'},                           // Guess the movie from a frame
+{icon:'🚩',title:'Flagle',url:'https://flagle.io/'},                            // Guess the flag
+{icon:'🎮',title:'Gamedle', url:'https://www.gamedle.wtf/'},                    // Guess the video game by cover art
+{icon:'🧠',title:'Semantle', url:'https://semantle.com/'},                      // Semantic word guessing
+{icon:'🕵️',title:'WhenTaken', url:'https://whentaken.com/'},                   // Guess when/where a photo was taken
+{icon:'📸',title:'Chronophoto', url:'https://www.chronophoto.app/'},            // Guess the year of a photo
+{icon:'📐',title:'Angle', url:'https://angle.wtf/'},                            // Guess the displayed angle
+{icon:'🚩',title:'Flaggle', url:'https://www.flaggle.io/'},                     // Guess the flag (alt link)
+{icon:'🎮',title:'GuessTheGame', url:'https://guessthe.game/'},                 // Guess the video game from screenshots
+{icon:'🎵',title:'Heardle Archive', url:'https://heardledecades.com/'},         // Guess songs by clips
+{icon:'🎥',title:'Cine2Nerdle', url:'https://www.cine2nerdle.com/'},            // Guess movies via emoji/math clues
+{icon:'🐾',title:'Pokedle', url:'https://pokedle.net/'},                        // Daily Pokémon guessing
+{icon:'✈️',title:'Travle', url:'https://travle.io/'},                           // Find travel paths between countries
+{icon:'📚',title:'Wikitrivia', url:'https://wikitrivia.tomjwatson.com/'},       // Place Wikipedia events on timeline
+{icon:'🖼️',title:'Artle', url:'https://www.nga.gov/artle.html'},               // Guess the artist
+{icon:'🔢',title:'Numberle', url:'https://numberle.org/'},                      // Guess the equation
+{icon:'📊',title:'Factle', url:'https://factle.app/'},                          // Rank facts/data in order
+{icon:'🌍',title:'Globle', url:'https://globle-game.com/'},                     // Guess mystery country w/ heatmap clues
+{icon:'🎞️',title:'MovieGrid', url:'https://moviegrid.io/'},                    // Daily movie trivia grid
+{icon:'🏈',title:'Immaculate Grid (NFL)', url:'https://www.immaculategrid.com/football'}, // NFL grid trivia
+{icon:'🏀',title:'HoopGrids (NBA)', url:'https://hoopgrids.com/'},              // NBA daily grid
+{icon:'🧝',title:'Tolkiendle', url:'https://tolkiendle.com/'},                  // Tolkien character guessing game
+{icon:'🏎️',title:'Driverle', url:'https://www.formula1points.com/driverle'},   // F1 driver guessing
+{icon:'🚦',title:'Stewardle', url:'https://stewardle.com/'},                    // Guess the F1 driver of the day
+{icon:'🏁',title:'F1Quizle', url:'https://f1quizle.com/'},                      // Daily F1 trivia game
+{icon:'💰',title:'GuessThePrice (ultra-luxury)', url:'https://guesstheprice.net/'} // Guess price of luxury items
 
     ];
 
@@ -707,6 +724,8 @@ input, select, textarea{font-size:16px}
     const newNameEl = $('#newName');
     const newColorEl = $('#newColor');
     const addBtn = $('#addBtn');
+    const randomFavBtn = $('#randomFavBtn');
+const randomAllBtn = $('#randomAllBtn');
 
     /* ---- Canvas ---- */
     const canvas = $('#wheelCanvas');
@@ -1161,11 +1180,12 @@ input, select, textarea{font-size:16px}
           <span class="glabel"><span class="ico">${g.icon}</span><span>${g.title}</span></span><span>↗</span>
         </a>
       </div>`).join('');
-      more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
-        <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
-          <span class="glabel"><span class="ico">🎮</span><span>${g.title}</span></span><span>↗</span>
-        </a>
-      </div>`).join('');
+  more.innerHTML=MORE_GAMES.map(g=>`<div class="game">
+  <a href="${g.url}" data-gameid="${g.title.toLowerCase().replace(/\s+/g,'-')}" data-title="${g.title}" class="game-link" target="_blank">
+    <span class="glabel"><span class="ico">${g.icon || '🎮'}</span><span>${g.title}</span></span><span>↗</span>
+  </a>
+</div>`).join('');
+
       function attachHandlers(container){
         container.querySelectorAll('a.game-link').forEach(a=>{
           a.addEventListener('click',(e)=>{
@@ -1246,6 +1266,36 @@ input, select, textarea{font-size:16px}
       });
     }
 
+    /* ---------- Random game pickers (no repeats while on tracker) ---------- */
+function gameIdFromTitle(title){
+  return String(title || '').toLowerCase().trim().replace(/\s+/g,'-');
+}
+function pickRandomGameFrom(list){
+  const tracked = new Set(TRACKED_GAMES.map(g => g.id));
+  const pool = list
+    .map(g => ({...g, id: gameIdFromTitle(g.title)}))
+    .filter(g => !tracked.has(g.id));
+  if (pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// Favorites button
+randomFavBtn?.addEventListener('click', () => {
+  const g = pickRandomGameFrom(FAVORITES);
+  if (!g){ alert('Whoops you played all those already idiot'); return; }
+  addGameToTracker({ id:g.id, title:g.title, url:g.url });
+  window.open(g.url,'_blank','noopener,noreferrer');
+});
+
+// All (More games) button
+randomAllBtn?.addEventListener('click', () => {
+  const g = pickRandomGameFrom(MORE_GAMES);
+  if (!g){ alert('Whoops you played all those already idiot'); return; }
+  addGameToTracker({ id:g.id, title:g.title, url:g.url });
+  window.open(g.url,'_blank','noopener,noreferrer');
+});
+
+
     /* ---------- Save ---------- */
     function saveState(){
       const state={
@@ -1277,26 +1327,52 @@ input, select, textarea{font-size:16px}
     addBtn.addEventListener('click', addGuest);
     newNameEl.addEventListener('keydown', (e)=>{ if (e.key==='Enter') addGuest(); });
 
-    $('#resetBtn').addEventListener('click',()=>{
-      resetRotor(); teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false);
-      wheelIds=[...selectedIds]; nextTeam='A'; setFoFUI(false); modeState.textContent='';
-      TRACKED_GAMES=[]; teamANameVal=teamAName.value||'Team A'; teamBNameVal=teamBName.value||'Team B';
-      renderGameTracker(); renderScore();
-      syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
-    });
+$('#resetBtn').addEventListener('click',()=>{
+  if (!confirm('Reset everything? This will clear the tracker & scoreboard, set team names back to defaults, and remove everyone from the wheel.')) return;
+
+  // Wheel / mode
+  resetRotor();
+  mode = 'normal';
+  chooser = null;
+  fofChoice = null;
+  lockSpin(false);
+  setFoFUI(false);
+  modeState.textContent = '';
+
+  // Teams
+  teamA = [];
+  teamB = [];
+  nextTeam = 'A';
+
+  // Team names back to defaults (inputs + state)
+  teamANameVal = 'Team A';
+  teamBNameVal = 'Team B';
+  teamAName.value = teamANameVal;
+  teamBName.value = teamBNameVal;
+
+  // Game tracker & manual points
+  TRACKED_GAMES = [];
+  MANUAL_A = 0;
+  MANUAL_B = 0;
+
+  // Take everyone off the wheel
+  selectedIds = new Set();   // no one selected
+  wheelIds = [];             // empty wheel
+
+  // Re-render + save
+  renderGameTracker();
+  renderScore();
+  renderRoster();
+  drawWheel();
+  updateMatchupUI();
+  saveState();
+});
+
     $('#clearTeamsBtn').addEventListener('click',()=>{
       teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false); nextTeam='A';
       syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
     });
-    $('#newGameBtn').addEventListener('click',()=>{
-      if(confirm('Start a NEW GAME? This clears teams & scores (keeps players).')){
-        resetRotor(); teamA=[]; teamB=[]; chooser=null; fofChoice=null; lockSpin(false);
-        mode='normal'; nextTeam='A'; wheelIds=[...selectedIds]; setFoFUI(false); modeState.textContent='';
-        TRACKED_GAMES=[]; teamANameVal=teamAName.value||'Team A'; teamBNameVal=teamBName.value||'Team B';
-        renderGameTracker(); renderScore();
-        syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState();
-      }
-    });
+
     modeNormal.addEventListener('click',()=>{mode='normal'; modeState.textContent=''; setFoFUI(false); lockSpin(false); modeFoF.classList.add('secondary'); modeNormal.classList.remove('secondary'); saveState();});
     modeFoF.addEventListener('click',()=>{mode='fof'; modeState.textContent='Friend or Foe enabled'; modeFoF.classList.remove('secondary'); modeNormal.classList.add('secondary'); saveState();});
     formatSel.addEventListener('change',()=>{ teamA=[]; teamB=[]; nextTeam='A'; syncWheelFromSelected(); drawWheel(); updateMatchupUI(); saveState(); });
