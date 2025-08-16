@@ -329,6 +329,49 @@
     @media (max-width:600px){
       .team-members{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;gap:8px}
     }
+    /* --- Soundboard (slide-out on right) --- */
+#sbDock{
+  position:fixed; right:0; top:30%;
+  transform:translateY(-50%);
+  z-index:11000;
+  width:42px;              /* collapsed width */
+  max-width:90vw;
+  border-radius:12px 0 0 12px;
+  background:#0f2347;
+  box-shadow:0 10px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.08);
+  overflow:hidden;
+  transition: width 200ms cubic-bezier(.2,1,.2,1);
+}
+#sbDock.open{ width:230px; }  /* expanded width */
+
+.sb-row{ display:flex; align-items:stretch; }
+.sb-tab{
+  flex:0 0 42px;
+  display:grid; place-items:center;
+  cursor:pointer; user-select:none;
+  font-weight:800;
+  background:#132b57;
+  border:0; color:#dff3ff;
+}
+.sb-tab:active{ transform:translateY(0) scale(.98); }
+.sb-panel{
+  flex:1; padding:10px; display:grid; gap:8px;
+}
+.sb-grid{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:8px;
+}
+.sb-btn{
+  border:0; border-radius:10px;
+  padding:10px 0;
+  background:#132b57; color:#dff3ff;
+  font-size:18px; cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.sb-btn:active{ transform:scale(.98); }
+.sb-label{ font-size:11px; opacity:.85; text-align:center; margin-top:2px; }
+
   </style>
 </head>
 <body>
@@ -1581,6 +1624,85 @@ teamBName.addEventListener('focus', () => {
 
       return { open, close };
     })();
+/* ---------- Soundboard (slide-out) ---------- */
+function initSoundboard(){
+  // Use web-friendly relative paths (forward slashes). Put your files here in your project:
+  // assets/Sounds/Soundboard/Soundboard_*.mp3
+  const soundFiles = {
+    boo:       'assets/Sounds/Soundboard/Soundboard_Boo.mp3',
+    cheer:     'assets/Sounds/Soundboard/Soundboard_Cheer.mp3',
+    gasp:      'assets/Sounds/Soundboard/Soundboard_Gasp.mp3',
+    laugh:     'assets/Sounds/Soundboard/Soundboard_Laugh.mp3',
+    incorrect: 'assets/Sounds/Soundboard/Soundboard_Incorrect.mp3'
+  };
+
+  // Create a single Audio object per sound, allow rapid retrigger
+  const sounds = {};
+  for (const [k, src] of Object.entries(soundFiles)){
+    const a = new Audio(src);
+    a.preload = 'auto';
+    sounds[k] = a;
+  }
+
+  // Build DOM
+  const dock = document.createElement('div');
+  dock.id = 'sbDock';
+  dock.innerHTML = `
+    <div class="sb-row">
+      <button class="sb-tab" title="Soundboard" aria-label="Soundboard">🔊</button>
+      <div class="sb-panel" role="group" aria-label="Soundboard">
+        <div class="sb-grid">
+          <button class="sb-btn" data-s="cheer" title="Cheer">👏</button>
+          <button class="sb-btn" data-s="boo" title="Boo">👎</button>
+          <button class="sb-btn" data-s="aww" data-s-alt="gasp" title="Gasp">😮</button>
+          <button class="sb-btn" data-s="laugh" title="Laugh">😂</button>
+          <button class="sb-btn" data-s="incorrect" title="Incorrect">❌</button>
+        </div>
+        <div class="sb-label faint">Click anywhere outside to close</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(dock);
+
+  const tab = dock.querySelector('.sb-tab');
+
+  // Toggle open/close
+  function open(){ dock.classList.add('open'); }
+  function close(){ dock.classList.remove('open'); }
+  function isInside(el){ return dock.contains(el); }
+
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dock.classList.toggle('open');
+  });
+
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (!isInside(e.target)) close();
+  });
+
+  // Esc to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+
+  // Play logic
+  dock.querySelectorAll('.sb-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // don't close immediately
+      const key = btn.dataset.s === 'aww' ? 'gasp' : (btn.dataset.s || btn.dataset.sAlt);
+      const a = sounds[key];
+      if (!a) return;
+      try {
+        // Allow quick retriggers
+        a.pause();
+        a.currentTime = 0;
+        a.play();
+      } catch {}
+    });
+  });
+}
+
 
     /* ---------- Init ---------- */
     function saveAndRenderAll(){
@@ -1592,6 +1714,8 @@ teamBName.addEventListener('focus', () => {
       updateMatchupUI();
     }
     saveAndRenderAll();
+    initSoundboard();
+
   </script>
 
   <script>
